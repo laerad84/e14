@@ -1,0 +1,37 @@
+/control/alias ang  4.*deg
+/control/alias dis  815*mm
+/control/alias radi 13.3*mm
+/control/alias th   0.001*mm
+/control/alias zpos {dis}*cos({ang})
+/control/alias len  2.*{radi}*sin({ang})
+/control/alias rm  {dis}*sin({ang})
+/control/alias dr  {radi}*cos({ang})
+/control/alias r0  ({rm}+{dr})
+/control/alias r1  ({rm}-{dr})
+
+
+
+#######################################################################
+/GsimDetector/world/setParameters 20*cm 20*cm 2.2*m
+/GsimDetector/world/setOuterMaterial G4_Galactic
+/GsimDetector/world/setOuterVisibility 0
+
+/GsimDetectorFactory/GsimTube/buildAndRegister target /world 0 0 0 0 -{ang} 0
+/GsimDetector/world/target/setParameters 0 8*mm 60*mm 0*deg 360*deg
+/GsimDetector/world/target/setOuterMaterial G4_Pt
+/GsimDetector/world/target/setOuterColor blue
+
+# just before the target
+#/GsimDetectorFactory/GsimTube/buildAndRegister det0 /world 0 0 30*mm+1*mm 0 0 0
+#/GsimDetector/world/det0/setOuterMaterial G4_Galactic
+#/GsimDetector/world/det0/setParameters 0 300*mm 2*mm 0*deg 360*deg
+#/GsimDetector/world/det0/setOuterColor yellow
+
+# C1 aperture (to be modified)
+/GsimDetectorFactory/GsimPolycone2/buildAndRegister det1 /world 0 0 {zpos} 0 0 0
+/GsimDetector/world/det1/setParameters 0*deg 360*deg {len} {r0} {r0}+{th} {r1} {r1}+{th}
+/GsimDetector/world/det1/setOuterMaterial G4_Galactic
+/GsimDetector/world/det1/setOuterColor yellow
+
+
+/GsimDetectorManager/update

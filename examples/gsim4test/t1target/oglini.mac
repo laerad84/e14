@@ -1,0 +1,10 @@
+/vis/scene/create
+/vis/open OGLIX
+/vis/viewer/reset
+/vis/drawVolume
+/vis/viewer/set/lineSegmentsPerCircle 256
+/vis/viewer/set/viewpointThetaPhi  -90 0
+/vis/viewer/flush
+/vis/scene/endOfEventAction accumulate 0
+
+#

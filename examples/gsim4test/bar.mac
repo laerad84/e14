@@ -1,0 +1,62 @@
+/control/alias sci_num  61
+/control/alias loop_num 60
+/control/alias ll_num   11
+/control/alias sci_size 5*mm
+/control/alias sep_thick 1*mm
+/control/alias plate_thick 1*mm
+/control/alias converter_thick 2*mm
+
+/GsimPhysicsListFactory/LHEP/buildAndRegister 
+/GsimPrimaryGeneratorActionFactory/GsimGeneralParticleSource/buildAndRegister gps
+/control/execute oglini.mac
+/GsimEventAction/setVisualizationMode 1
+#/GsimEventAction/setAccumulationNumber -1
+/GsimTrackingAction/setBriefTrackStore true
+
+/GsimDetector/world/setParameters 5*m 5*m 5*m
+/GsimDetector/world/setOuterVisibility 0
+/GsimDetectorFactory/GsimDetector/buildAndRegister bar /world
+
+/GsimDetectorFactory/GsimBox/buildAndRegister layer /world/bar
+/GsimDetector/world/bar/layer/setOuterMaterial GsimVacuum
+/GsimDetector/world/bar/layer/setOuterVisibility false
+/GsimDetector/world/bar/layer/setParameters ({sci_num}*({sci_size}+{sep_thick})+{sep_thick}) ({sci_num}*({sci_size}+{sep_thick})+{sep_thick}) ({sci_size}+{plate_thick}+{converter_thick})
+/GsimDetector/world/bar/layer/setTranslationVector 0 0 0
+
+/GsimDetectorFactory/GsimBox/buildAndRegister converter /world/bar/layer
+/GsimDetector/world/bar/layer/converter/setOuterMaterial G4_Pb
+/GsimDetector/world/bar/layer/converter/setParameters ({sci_num}*({sci_size}+{sep_thick})+{sep_thick}) ({sci_num}*({sci_size}+{sep_thick})+{sep_thick}) {converter_thick}
+/GsimDetector/world/bar/layer/converter/setTranslationVector 0 0 -({sci_size}/2.+{converter_thick}/2.)
+
+/GsimDetectorFactory/GsimBox/buildAndRegister sci /world/bar/layer
+/GsimDetector/world/bar/layer/sci/setParameters ({sci_num}*({sci_size}+{sep_thick})+{sep_thick}) {sci_size} {sci_size}
+/GsimDetector/world/bar/layer/sci/setTranslationVector 0 0*({sci_size}+{sep_thick})-({sci_num}-1)/2*({sci_size}+{sep_thick}) 0
+/GsimDetector/world/bar/layer/sci/setOuterColor yellow
+/GsimDetector/world/bar/layer/sci/setSensitiveDetectorWithName sci -1
+
+/GsimDetectorFactory/GsimBox/buildAndRegister sep /world/bar/layer
+/GsimDetector/world/bar/layer/sep/setOuterMaterial G4_Al
+/GsimDetector/world/bar/layer/sep/setParameters ({sci_num}*({sci_size}+{sep_thick})+{sep_thick}) {sep_thick} {sci_size}
+/GsimDetector/world/bar/layer/sep/setTranslationVector 0 0*({sci_size}+{sep_thick})+({sci_size}/2.+{sep_thick}/2.)-({sci_num}-1)/2*({sci_size}+{sep_thick}) 0
+/GsimDetector/world/bar/layer/sep/setOuterColor gray70
+
+/control/loop cell.mac id 1 {loop_num}
+
+
+
+/GsimDetectorFactory/GsimBox/buildAndRegister plate /world/bar/layer
+/GsimDetector/world/bar/layer/plate/setOuterMaterial G4_Al
+/GsimDetector/world/bar/layer/plate/setParameters ({sci_num}*({sci_size}+{sep_thick})+{sep_thick}) ({sci_num}*({sci_size}+{sep_thick})+{sep_thick}) {plate_thick}
+/GsimDetector/world/bar/layer/plate/setTranslationVector 0 0 ({sci_size}/2.+{plate_thick}/2.)
+/GsimDetector/world/bar/layer/plate/setOuterColor gray70
+
+/control/loop layer.mac il 1 {ll_num}
+
+/GsimDetectorManager/update
+
+/gps/particle gamma
+/gps/position 0 0 -10 cm
+/gps/energy 1 GeV
+/gps/direction 0 0 1
+/run/initialize
+#/run/beamOn 20

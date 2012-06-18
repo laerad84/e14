@@ -1,0 +1,7 @@
+#########################################################
+# sensitive detector
+#########################################################
+/GsimDetector/world/box/setSensitiveDetectorWithName box 0
+/run/beamOn 100
+
+

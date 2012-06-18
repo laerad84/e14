@@ -1,0 +1,71 @@
+#######################################################################
+/control/alias D 397.6*mm
+/control/alias t0 21.7*mm
+/control/alias t1 11.2*mm
+/control/alias t2  8.3*mm
+/control/alias t3  6.9*mm
+/control/alias t4  5.9*mm
+/control/alias bp  170*mm
+/control/alias gap   3*mm
+
+
+/GsimDetector/world/setParameters 1*m 1*m 2.2*m
+/GsimDetector/world/setOuterMaterial G4_Galactic
+/GsimDetector/world/setOuterVisibility false
+
+
+
+/GsimDetectorFactory/GsimPolycone2/buildAndRegister target0u /world -{bp} 0 {t0}*1./4. 0 0 0
+/GsimDetectorFactory/GsimPolycone2/buildAndRegister target0d /world -{bp} 0 {t0}*3./4. 0 0 0
+/GsimDetectorFactory/GsimPolycone2/buildAndRegister target1u /world -{bp} 0 {t0}+{gap}+{t1}*1./4. 0 0 0
+/GsimDetectorFactory/GsimPolycone2/buildAndRegister target1d /world -{bp} 0 {t0}+{gap}+{t1}*3./4. 0 0 0
+/GsimDetectorFactory/GsimPolycone2/buildAndRegister target2u /world -{bp} 0 {t0}+{gap}+{t1}+{gap}+{t2}*1./4. 0 0 0
+/GsimDetectorFactory/GsimPolycone2/buildAndRegister target2d /world -{bp} 0 {t0}+{gap}+{t1}+{gap}+{t2}*3./4. 0 0 0
+/GsimDetectorFactory/GsimPolycone2/buildAndRegister target3u /world -{bp} 0 {t0}+{gap}+{t1}+{gap}+{t2}+{gap}+{t3}*1./4. 0 0 0
+/GsimDetectorFactory/GsimPolycone2/buildAndRegister target3d /world -{bp} 0 {t0}+{gap}+{t1}+{gap}+{t2}+{gap}+{t3}*3./4. 0 0 0
+/GsimDetectorFactory/GsimPolycone2/buildAndRegister target4u /world -{bp} 0 {t0}+{gap}+{t1}+{gap}+{t2}+{gap}+{t3}+{gap}+{t4}*1./4. 0 0 0
+/GsimDetectorFactory/GsimPolycone2/buildAndRegister target4d /world -{bp} 0 {t0}+{gap}+{t1}+{gap}+{t2}+{gap}+{t3}+{gap}+{t4}*3./4. 0 0 0
+
+/GsimDetector/world/target0u/setOuterMaterial G4_Ni
+/GsimDetector/world/target0d/setOuterMaterial G4_Ni
+/GsimDetector/world/target1u/setOuterMaterial G4_Ni
+/GsimDetector/world/target1d/setOuterMaterial G4_Ni
+/GsimDetector/world/target2u/setOuterMaterial G4_Ni
+/GsimDetector/world/target2d/setOuterMaterial G4_Ni
+/GsimDetector/world/target3u/setOuterMaterial G4_Ni
+/GsimDetector/world/target3d/setOuterMaterial G4_Ni
+/GsimDetector/world/target4u/setOuterMaterial G4_Ni
+/GsimDetector/world/target4d/setOuterMaterial G4_Ni
+
+
+/GsimDetector/world/target0u/setParameters 0*deg 360*deg {t0}/2. 0.*mm ({D}-{t0}*sqrt(3))/2. 0.*mm  {D}/2.
+/GsimDetector/world/target0d/setParameters 0*deg 360*deg {t0}/2. 0.*mm {D}/2.              0.*mm  ({D}-{t0}*sqrt(3))/2.
+/GsimDetector/world/target1u/setParameters 0*deg 360*deg {t1}/2. 0.*mm ({D}-{t1}*sqrt(3))/2. 0.*mm  {D}/2.
+/GsimDetector/world/target1d/setParameters 0*deg 360*deg {t1}/2. 0.*mm {D}/2.              0.*mm  ({D}-{t1}*sqrt(3))/2.
+/GsimDetector/world/target2u/setParameters 0*deg 360*deg {t2}/2. 0.*mm ({D}-{t2}*sqrt(3))/2. 0.*mm  {D}/2.
+/GsimDetector/world/target2d/setParameters 0*deg 360*deg {t2}/2. 0.*mm {D}/2.              0.*mm  ({D}-{t2}*sqrt(3))/2.
+/GsimDetector/world/target3u/setParameters 0*deg 360*deg {t3}/2. 0.*mm ({D}-{t3}*sqrt(3))/2. 0.*mm  {D}/2.
+/GsimDetector/world/target3d/setParameters 0*deg 360*deg {t3}/2. 0.*mm {D}/2.              0.*mm  ({D}-{t3}*sqrt(3))/2.
+/GsimDetector/world/target4u/setParameters 0*deg 360*deg {t4}/2. 0.*mm ({D}-{t4}*sqrt(3))/2. 0.*mm  {D}/2.
+/GsimDetector/world/target4d/setParameters 0*deg 360*deg {t4}/2. 0.*mm {D}/2.              0.*mm  ({D}-{t4}*sqrt(3))/2.
+
+/GsimDetector/world/target0u/setOuterColor blue
+/GsimDetector/world/target0d/setOuterColor blue
+/GsimDetector/world/target1u/setOuterColor blue
+/GsimDetector/world/target1d/setOuterColor blue 
+/GsimDetector/world/target2u/setOuterColor blue
+/GsimDetector/world/target2d/setOuterColor blue
+/GsimDetector/world/target3u/setOuterColor blue
+/GsimDetector/world/target3d/setOuterColor blue
+/GsimDetector/world/target4u/setOuterColor blue
+/GsimDetector/world/target4d/setOuterColor blue
+
+/GsimDetectorFactory/GsimTube/buildAndRegister det0 /world 0 0 ({t0}+{gap}+{t1}+{gap}+{t2}+{gap}+{t3}+{gap}+{t4})+1*mm 0 0 0
+
+/GsimDetector/world/det0/setOuterMaterial G4_Galactic
+/GsimDetector/world/det0/setParameters 0 400*mm 2*mm 0*deg 360*deg
+/GsimDetector/world/det0/setOuterColor yellow
+
+/GsimDetectorManager/update
+/run/initialize
+

@@ -1,0 +1,49 @@
+/GsimPhysicsListFactory/QGSP_BERT/buildAndRegister
+/GsimPrimaryGeneratorActionFactory/GsimGeneralParticleSource/buildAndRegister gps
+/gps/particle e-
+/gps/energy 1 GeV
+/gps/direction 0 0 1
+/control/execute oglini.mac
+/GsimEventAction/setVisualizationMode 1
+/GsimEventAction/setAccumulationNumber -1
+
+/GsimDetector/world/setParameters 200*cm 200*cm 200*cm
+/GsimDetector/world/setOuterMaterial G4_Galactic
+
+/GsimDetectorFactory/GsimBox/buildAndRegister box /world
+/GsimDetector/world/box/setParameters 100*cm 100*cm 100*cm
+/GsimDetector/world/box/setOuterMaterial G4_Galactic
+/GsimDetector/world/box/setOuterColor blue
+
+/GsimDetectorFactory/GsimBox/buildAndRegister box2 /world/box
+/GsimDetector/world/box/box2/setParameters 50*cm 50*cm 50*cm
+/GsimDetector/world/box/box2/setOuterMaterial G4_Galactic
+/GsimDetector/world/box/box2/setOuterColor red
+
+/GsimDetectorFactory/GsimBox/buildAndRegister box3 /world/box/box2
+/GsimDetector/world/box/box2/box3/setParameters 25*cm 25*cm 25*cm
+/GsimDetector/world/box/box2/box3/setOuterMaterial G4_Galactic
+/GsimDetector/world/box/box2/box3/setOuterColor yellow
+
+/GsimDetectorManager/update
+/run/initialize
+/run/beamOn 2
+
+/GsimDetector/world/box/setThisMagneticField 10*T 0 0
+/GsimDetector/world/box/box2/setThisMagneticField -10*T 0 0
+/GsimDetector/world/box/box2/box3/setThisMagneticField  10*T 0 0
+/GsimDetectorManager/update
+/run/beamOn 2
+
+/GsimDetector/world/box/box2/setThisAndDaughterMagneticField -10*T 0 0
+/GsimDetectorManager/update
+/run/beamOn 2
+
+/GsimDetector/world/box/setThisAndDaughterMagneticField 1*T 0 0
+/GsimDetector/world/box/box2/box3/setThisMagneticField 1.5*T 0 0
+/GsimDetector/world/box/setThisAndDaughterUserTimeMax 20*ns
+/GsimDetectorManager/update
+/gps/energy 50 MeV
+/run/beamOn 2
+
+

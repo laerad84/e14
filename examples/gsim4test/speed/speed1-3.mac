@@ -1,0 +1,35 @@
+/GsimPhysicsListFactory/LHEP/buildAndRegister
+/GsimPrimaryGeneratorActionFactory/GsimGeneralParticleSource/buildAndRegister gps
+/gps/particle KLpi0pi0
+/gps/energy 1 GeV
+/gps/position 0 0 -1 m
+/gps/direction 0 0 1
+/GsimSpectrumFactory/GsimE14Spectrum/buildAndRegister
+/GsimSpectrum/GsimE14Spectrum/addSpectrum Special
+
+##### visualization #####
+#/control/execute oglsini.mac
+/GsimEventAction/setVisualizationMode 0
+#/GsimEventAction/setAccumulationNumber -1
+
+##### geometry #####
+/GsimDetector/world/setParameters 5*m 5*m 50*m
+/GsimDetector/world/setOuterVisibility 0
+/GsimDetector/world/setOuterMaterial G4_Galactic
+/GsimDetectorFactory/GsimE14/buildAndRegister e14 /world
+
+##### processing #####
+/GsimDetector/world/setThisAndDaughterHitsStore false
+/GsimTrackingAction/setBriefTrackStore    false
+/GsimTrackingAction/setTrackHistory       false
+/GsimDetector/world/setThisAndDaughterDigiStore false
+
+
+##### fast sim #####
+/GsimDetector/world/e14/setFastSimulationLevel 6
+/GsimDetector/world/e14/setThisAndDaughterHitsStore true
+/GsimDetectorManager/update
+/run/initialize
+#/run/beamOn 100
+#/GsimPersistencyManager/setSeed 0
+

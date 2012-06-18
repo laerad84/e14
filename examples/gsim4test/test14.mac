@@ -1,0 +1,24 @@
+#/control/execute e391.mac
+
+/GsimPhysicsListFactory/QGSP_BERT/buildAndRegister 
+/GsimPrimaryGeneratorActionFactory/GsimGeneralParticleSource/buildAndRegister gps
+
+/gps/particle KLpi0pi0
+/gps/energy 1 GeV
+/gps/direction 0 0 1
+/control/execute oglini.mac
+/GsimEventAction/setVisualizationMode 1
+
+/GsimDetector/world/setParameters 5*m 5*m 24*m
+/GsimDetectorFactory/GsimE391CSI/buildAndRegister  csi  /world 0 0 (609.8+180./2.)*cm  0 0 0
+
+
+/GsimSpectrumFactory/GsimE391Spectrum/buildAndRegister
+/GsimSpectrum/GsimE391Spectrum/addSpectrum Special
+
+/GsimTrackingAction/setBriefTrackStore false
+/GsimDetector/world/setThisAndDaughterHitsStore false
+/GsimDetector/world/setThisAndDaughterDigiStore true
+/GsimDetectorManager/update
+/run/initialize
+/run/beamOn 100

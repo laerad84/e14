@@ -1,0 +1,26 @@
+/GsimPhysicsListFactory/QGSP_BERT/buildAndRegister
+/GsimPrimaryGeneratorActionFactory/GsimHEPEvtInterface/buildAndRegister
+/GsimPrimaryGeneratorAction/HepEVT/setInputFileName pythia_event.data
+/GsimPrimaryGeneratorAction/HepEVT/convertToRootFile pythia_event.root
+/control/execute oglini.mac
+/GsimEventAction/setVisualizationMode 1
+#/GsimEventAction/setAccumulationNumber -1
+/GsimTrackingAction/setBriefTrackStore true
+
+/GsimDetector/world/setParameters 20*cm 20*cm 20*cm
+/GsimDetectorFactory/GsimDetector/buildAndRegister dummy /world
+/GsimDetectorFactory/GsimBox/buildAndRegister box /world/dummy
+/GsimDetector/world/dummy/box/setOuterMaterial G4_Fe
+/GsimDetector/world/dummy/setTranslationVector 0 0 2.5*cm
+/GsimDetector/world/dummy/box/setSensitiveDetectorWithName det
+/GsimDetector/world/dummy/box/cloneDetector 0 0 5*cm 0*deg 0*deg 45*deg 10
+/GsimDetectorManager/update
+/run/initialize
+/run/beamOn 5
+
+/GsimPrimaryGeneratorAction/HepEVT/setInputFileName pythia_event.root
+/run/beamOn 5
+
+/vis/viewer/set/viewpointThetaPhi 30 30 
+/run/beamOn 1
+/run/beamOn 1

@@ -1,0 +1,50 @@
+1. subversion
+   Many recent Linux distribution have subversion already.
+   At RSC, for bash user
+	$ SVN=/e14/local/subversion/1.1.4
+	$ export LD_LIBRARY_PATH=${SVN}/lib:${LD_LIBRARY_PATH}
+	$ export PATH=${SVN}/bin:${PATH}
+	$ export MANPATH=${SVN}/man:${MANPATH}
+   At KEK CC, for bash user
+	$ SVN=/nfs/g/ps/klea/e14/local/subversion/1.1.4
+	$ export LD_LIBRARY_PATH=${SVN}/lib:${LD_LIBRARY_PATH}
+	$ export PATH=${SVN}/bin:${PATH}
+	$ export MANPATH=${SVN}/man:${MANPATH}
+
+
+2. ROOT
+        export ROOTSYS=xxx
+        export PATH=${ROOTSYS}/bin:$PATH
+        export LD_LIBRARY_PATH=${ROOTSYS}/lib:${LD_LIBRARY_PATH}
+        # For KEK CC root under /software/ROOT
+	# export LD_LIBRARY_PATH=${ROOTSYS}/lib/root:${LD_LIBRARY_PATH}
+	# For Mac add 
+        # export DYLD_LIBRARY_PATH=${ROOTSYS}/lib:${DYLD_LIBRARY_PATH}
+
+	At KEK CC, each version of ROOT is installed under /software/ROOT/
+
+3. Geant4/CLHEP
+
+     1) For standard Genat4 environment
+        export G4INSTALL=yyy
+	source $G4INSTALL/env.sh
+	# source $G4INSTALL/env.sh &> /dev/null 
+	#   is convenient in .bashrc )
+	export PATH=${CLHEP_BASE_DIR}/bin:$PATH
+        # PATH is not set inside $G4INStALL/env.sh
+        # LD_LIBRARY_PATH is automatically set inside $G4INStALL/env.sh
+
+     2) At KEK CC, each version of Geant4 is installed under /software/Geant4/
+	export G4INSTALL=xxx
+	export G4SYSTEM=yyy
+	export G4LIB=zzz 
+	# ${G4INSTALL}/lib as usual, but ${G4INSTALL}/slib at KEK CC
+	export G4LIB_BUILD_SHARED=1
+	export LD_LIBRARY_PATH=${G4LIB}/${G4SYSTEM}:${LD_LIBRARY_PATH}
+	export G4LEVELGAMMADATA=$G4INSTALL/../data/....
+	# also for other G4 data
+
+	export CLHEP_BASE_DIR=xxx
+	export PATH=${CLHEP_BASE_DIR}/bin:$PATH
+	export LD_LIBRARY_PATH=${CLHEP_BASE_DIR}/lib:${LD_LIBRARY_PATH}
+

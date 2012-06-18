@@ -1,0 +1,37 @@
+#########################################################
+# virtual detector in the world
+#########################################################
+
+
+#construct physics at first (world also)
+/GsimPhysicsListFactory/QGSP_BERT/buildAndRegister
+
+#constrcut gun next
+/GsimPrimaryGeneratorActionFactory/GsimGeneralParticleSource/buildAndRegister gps
+#gun setup anywere after construction
+/gps/particle gamma
+/gps/energy 1 GeV
+/gps/direction 0 0 1
+/gps/position  0 0 -1 m
+
+#world setup(world is already constructed here)
+/GsimDetector/world/setParameters 5*m 5*m 50*m
+/GsimDetector/world/setOuterVisibility false
+
+#construct my detector 
+/GsimDetectorFactory/GsimVirt/buildAndRegister virt /world 0*cm 0*cm 0*cm 0*deg 0*deg 0*deg
+
+/GsimDetectorFactory/GsimTube/buildAndRegister tube /world 0*cm 0*cm 4*cm 0*deg 0*deg 0*deg
+/GsimDetector/world/tube/setParameters 0 15*cm 1*cm 0*deg 360*deg
+/GsimDetector/world/tube/setOuterMaterial G4_Galactic
+/GsimDetector/world/tube/setSensitiveDetectorWithName tube 0
+/GsimDetector/world/tube/setFastSimulationLevel 5
+/GsimDetector/world/tube/setThisAndDaughterHitsStore true
+
+/GsimEventAction/setSkipEmptyData false
+
+# update all the modification
+/GsimDetectorManager/update
+/run/initialize
+
+

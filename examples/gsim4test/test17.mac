@@ -1,0 +1,34 @@
+/GsimPhysicsListFactory/QGSP_BERT/buildAndRegister 
+/GsimPrimaryGeneratorActionFactory/GsimGeneralParticleSource/buildAndRegister gps
+/gps/particle kaon0L
+/gps/energy 1 GeV
+/gps/direction 0 0 1
+#/run/verbose 2
+#/event/verbose 10
+#/tracking/verbose 10
+/control/execute oglini.mac
+/GsimEventAction/setVisualizationMode 1
+#/GsimEventAction/setAccumulationNumber -1
+/GsimTrackingAction/setBriefTrackStore true
+
+/GsimDetector/world/setParameters 10*m 10*m 10*m
+/GsimDetectorManager/update
+/run/initialize
+/run/beamOn 1
+
+/GsimPhysicsList/addXParticle 214.3*MeV
+/GsimPhysicsList/addPhaseSpaceDecay kaon0L pi0 pi0 X
+/GsimDetectorManager/update
+/run/beamOn 30
+
+/GsimPhysicsList/addPhaseSpaceDecay X mu+ mu-
+/GsimDetectorManager/update
+/run/beamOn 30
+
+
+
+
+
+
+
+

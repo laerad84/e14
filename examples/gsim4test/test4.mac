@@ -1,0 +1,19 @@
+/GsimPhysicsListFactory/QGSP_BERT/buildAndRegister 
+/GsimPrimaryGeneratorActionFactory/GsimGeneralParticleSource/buildAndRegister gps
+/gps/particle pi+
+/gps/energy 1 GeV
+/gps/direction 0 0 1
+/control/execute oglini.mac
+/GsimEventAction/setVisualizationMode 1
+#/GsimEventAction/setAccumulationNumber -1
+/GsimTrackingAction/setBriefTrackStore true
+
+/GsimDetector/world/setParameters 10*cm 10*cm 10*cm
+/GsimDetectorFactory/GsimDetector/buildAndRegister dummy /world
+/GsimDetectorFactory/GsimBox/buildAndRegister box /world/dummy
+/GsimDetector/world/dummy/box/setOuterMaterial G4_Fe
+/GsimDetector/world/dummy/setTranslationVector 0 0 2.5*cm
+/GsimDetector/world/dummy/setRotationVector 30*deg 30*deg 30*deg
+/GsimDetectorManager/update
+/run/initialize
+/run/beamOn 1

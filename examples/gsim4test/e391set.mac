@@ -1,0 +1,19 @@
+/GsimPhysicsListFactory/QGSP_BERT/buildAndRegister
+/GsimPrimaryGeneratorActionFactory/GsimGeneralParticleSource/buildAndRegister gps
+/gps/particle KLpi0pi0
+/gps/energy 1 GeV
+/gps/position 0 0 -1 m
+/gps/direction 0 0 1
+#/control/execute oglini.mac
+/GsimEventAction/setVisualizationMode -1
+#/GsimEventAction/setAccumulationNumber -1
+#/GsimTrackingAction/setBriefTrackStore true
+
+/GsimDetector/world/setParameters 5*m 5*m 24*m
+/GsimDetector/world/setOuterVisibility 0
+/GsimDetector/world/setOuterMaterial G4_Galactic
+/GsimDetectorFactory/GsimE391/buildAndRegister e391 /world
+/GsimDetectorManager/update
+/run/initialize
+/run/beamOn 1
+/geometry/test/run

@@ -1,0 +1,27 @@
+/GsimPhysicsListFactory/QGSP_BERT/buildAndRegister
+/GsimPrimaryGeneratorActionFactory/GsimGeneralParticleSource/buildAndRegister gps
+
+/gps/position 0 0 -50 cm
+/gps/direction 0 0 1
+/gps/pos/type Beam
+/gps/pos/sigma_x 3.3 mm
+/gps/pos/sigma_y 1.1 mm
+/gps/particle proton
+/gps/energy 12. GeV
+
+
+#/control/execute oglsini.mac
+#/GsimEventAction/setVisualizationMode 1
+
+/control/execute e391target.mac
+
+/GsimDetector/world/det1/setSensitiveDetectorWithName det1
+/GsimDetector/world/det1/setFastSimulationLevel 5
+/GsimDetector/world/det1/setHitsStore true
+/GsimDetector/world/det1/setDigiStore false
+
+/GsimTrackingAction/setBriefTrackStore false
+/GsimTrackingAction/setForceStorePrimary false
+
+/GsimDetectorManager/update
+/run/initialize

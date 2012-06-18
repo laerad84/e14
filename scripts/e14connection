@@ -1,0 +1,75 @@
+#!/bin/sh
+
+# export E14_GATE_USER=${USER}
+# export E14_SERVER_USER=${USER}
+# export E14_SVNHTTP_TUNNEL_PORT=61088
+# export E14_SVNSSH_TUNNEL_PORT=61022
+# export SVN_SSH="ssh -l ${E14_SERVER_USER} -oHostName=localhost -oHostKeyAlias=chiaki.kek.jp -oPort=${E14_SVNSSH_TUNNEL_PORT}"
+
+
+echo "Currently svn server is moved to Osaka Univ."
+echo "e14connection for ssh tunnel is not needed now."
+exit 0
+
+
+isKEK=`hostname | sed -n "/kek.jp/p"`
+isKEKCC=`hostname | sed -n "/cc.kek.jp/p"`
+if [ x$isKEK = x ];then 
+    isKEK=`hostname -f | sed -n "/kek.jp/p"`
+fi
+if [ x$isKEKCC = x ];then 
+    isKEKCC=`hostname -f | sed -n "/cc.kek.jp/p"`
+fi
+
+if [ x$isKEK != x ] && [ x$isKEKCC = x ];then
+    echo "Here is inside KEK. No E14 connection is needed."
+    exit 0
+fi
+
+if [ x$E14_GATE_USER = x ]; then
+    echo "Please set E14_GATE_USER."
+    exit 1
+fi
+
+if [ x$E14_SERVER_USER = x ]; then
+    echo "Please set E14_SERVER_USER."
+    exit 1
+fi
+
+if [ x$E14_SVNHTTP_TUNNEL_PORT = x ] ; then
+    echo "Please set E14_SVNHTTP_TUNNEL_PORT."
+    exit 1
+fi
+
+if [ x$E14_SVNSSH_TUNNEL_PORT = x ] ; then
+    echo "Please set E14_SVNSSH_TUNNEL_PORT."
+    exit 1
+fi
+
+if [ x"$SVN_SSH" = x ]; then
+    echo "Please set SVN_SSH as below if you want svn+ssh connection."
+    echo 'export SVN_SSH=ssh -l ${E14_SERVER_USER} -oHostName=localhost -oHostKeyAlias=chiaki.kek.jp -oPort=${E14_SVNSSH_TUNNEL_PORT}'
+fi
+
+
+
+case "$1" in
+    start)
+	echo "Start E14 tunnel connection to SVN server..."
+	ssh -l ${E14_GATE_USER} -f -C -N \
+	    -L ${E14_SVNSSH_TUNNEL_PORT}:chiaki.kek.jp:22 \
+	    -L ${E14_SVNHTTP_TUNNEL_PORT}:chiaki.kek.jp:80 \
+	    kl-gate.kek.jp
+	;;
+    stop)
+	echo "Stop E14 tunnel connection to SVN server..."
+	/sbin/fuser -k -n tcp ${E14_SVNHTTP_TUNNEL_PORT}
+	/sbin/fuser -k -n tcp ${E14_SVNSSH_TUNNEL_PORT}
+	;;
+    *)
+        echo "Usage: {start|stop}"
+        exit 1
+esac
+exit 0
+
+

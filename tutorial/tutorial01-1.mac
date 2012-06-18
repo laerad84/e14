@@ -1,0 +1,12 @@
+#########################################################
+# gun 
+#########################################################
+
+/gps/energy 1 MeV
+/run/beamOn 10
+
+/gps/energy 1 GeV
+/gps/particle neutron
+/run/beamOn 10
+
+/gps/particle gamma

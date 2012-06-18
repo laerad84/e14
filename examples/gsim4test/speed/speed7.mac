@@ -1,0 +1,48 @@
+/GsimPhysicsListFactory/QGSP_BERT/buildAndRegister
+/GsimPrimaryGeneratorActionFactory/GsimGeneralParticleSource/buildAndRegister gps
+/gps/particle KLpi0pi0
+/gps/energy 1 GeV
+/gps/position 0 0 -1 m
+/gps/direction 0 0 1
+/GsimSpectrumFactory/GsimE14Spectrum/buildAndRegister
+/GsimSpectrum/GsimE14Spectrum/addSpectrum Special
+
+##### visualization #####
+#/control/execute oglsini.mac
+/GsimEventAction/setVisualizationMode 0
+#/GsimEventAction/setAccumulationNumber -1
+
+##### geometry #####
+/GsimDetector/world/setParameters 5*m 5*m 50*m
+/GsimDetector/world/setOuterVisibility 0
+/GsimDetector/world/setOuterMaterial G4_Galactic
+/GsimDetectorFactory/GsimE14/buildAndRegister e14 /world
+
+##### processing #####
+/GsimDetector/world/setThisAndDaughterHitsStore false
+/GsimTrackingAction/setBriefTrackStore    true
+/GsimTrackingAction/setTrackHistory       true
+/GsimDetector/world/setThisAndDaughterDigiStore true
+
+
+##### fast sim #####
+
+/GsimSensitiveDetector/CC01/setOnlineVetoThreshold 0.05*GeV
+/GsimSensitiveDetector/CC02/setOnlineVetoThreshold 0.05*GeV
+/GsimSensitiveDetector/CC03/setOnlineVetoThreshold 0.05*GeV
+/GsimSensitiveDetector/CC04/setOnlineVetoThreshold 0.05*GeV
+/GsimSensitiveDetector/CC05/setOnlineVetoThreshold 0.05*GeV
+/GsimSensitiveDetector/CC06/setOnlineVetoThreshold 0.05*GeV
+/GsimSensitiveDetector/FBAR/setOnlineVetoThreshold 0.05*GeV
+/GsimSensitiveDetector/CBAR/setOnlineVetoThreshold 0.05*GeV
+/GsimSensitiveDetector/CV/setOnlineVetoThreshold 0.002*GeV
+
+/GsimStackingAction/setBriefDtectorOrder BHCV CV BCV CC04 CC05 CC06 BHPV CC01 CC02 FBAR CBAR CSI
+
+/GsimDetectorManager/update
+
+
+/run/initialize
+#/run/beamOn 100
+#/GsimPersistencyManager/setSeed 0
+

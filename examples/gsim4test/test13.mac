@@ -1,0 +1,16 @@
+/GsimPhysicsListFactory/QGSP_BERT/buildAndRegister
+/GsimPrimaryGeneratorActionFactory/GsimHEPEvtInterface/buildAndRegister
+/GsimPrimaryGeneratorAction/HepEVT/setInputEventDataFileName test13.root box
+/control/execute oglini.mac
+/GsimEventAction/setVisualizationMode 1
+/GsimEventAction/setAccumulationNumber -1
+
+/GsimDetector/world/setParameters 30*cm 30*cm 30*cm
+/GsimDetectorFactory/GsimBox/buildAndRegister box /world
+/GsimDetector/world/box/setParameters 10*cm 10*cm 10*cm
+/GsimDetector/world/box/setTranslationVector 0 0 6*cm
+/GsimDetector/world/box/setSensitiveDetector
+/GsimDetectorManager/update
+/run/initialize
+/run/beamOn 10
+

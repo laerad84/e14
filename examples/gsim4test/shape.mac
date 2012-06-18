@@ -1,0 +1,40 @@
+/control/alias pos 5*cm
+
+/GsimPhysicsListFactory/QGSP_BERT/buildAndRegister
+/GsimPrimaryGeneratorActionFactory/GsimGeneralParticleSource/buildAndRegister gps
+/GsimDetector/world/setOuterVisibility false
+
+/GsimDetectorFactory/GsimBox/buildAndRegister box /world 2*{pos} {pos} 0
+/GsimDetector/world/box/setParameters 5*cm 5*cm 5*cm
+/GsimDetector/world/box/setOuterColor blue
+
+/GsimDetectorFactory/GsimTube/buildAndRegister tube /world 0 {pos}  0
+/GsimDetector/world/tube/setParameters 2*cm 3*cm 5*cm 0*rad 0.9*2.*pi*rad
+/GsimDetector/world/tube/setOuterColor red
+
+/GsimDetectorFactory/GsimCone/buildAndRegister cone /world -2*{pos} {pos} 0
+/GsimDetector/world/cone/setParameters 1.5*cm 3*cm 5*cm
+/GsimDetector/world/cone/setOuterColor green
+
+/GsimDetectorFactory/GsimPolycone2/buildAndRegister pc2 /world 2*{pos} -{pos} 0
+/GsimDetector/world/pc2/setParameters 0*deg 360*deg 20*mm 25*mm 30*mm 10*mm 25*mm
+/GsimDetector/world/pc2/setOuterColor orange
+
+/GsimDetectorFactory/GsimPolyhedra2/buildAndRegister ph2 /world 0 -{pos} 0
+/GsimDetector/world/ph2/setParameters 0*deg 360*deg 8 20*mm 10*mm 20*mm
+/GsimDetector/world/ph2/setOuterColor magenta
+
+/GsimDetectorFactory/GsimBoxWithAHole/buildAndRegister boxh /world -2*{pos} -{pos} 0
+/GsimDetector/world/boxh/setParameters 5*cm 5*cm 5*cm 0*cm 1*cm 1.6*cm
+/GsimDetector/world/boxh/setOuterColor yellow
+
+/control/execute oglsini.mac
+#/control/execute dawnini.mac
+
+/vis/viewer/set/viewpointThetaPhi 150 30
+/vis/viewer/set/style s
+/vis/scene/add/axes 0 0 0 10 cm
+/vis/scene/add/scale 10 cm x 1 0 0 manual 0 -1.5 0 cm
+/GsimDetectorManager/update
+/run/initialize
+

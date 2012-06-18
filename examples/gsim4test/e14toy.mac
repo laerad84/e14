@@ -1,0 +1,41 @@
+/GsimPhysicsListFactory/QGSP_BERT/buildAndRegister
+/GsimPrimaryGeneratorActionFactory/GsimGeneralParticleSource/buildAndRegister gps
+/gps/particle KLpi0nunu
+/gps/energy 1 GeV
+/gps/position 0 0 -1 m
+/gps/direction 0 0 1
+
+#/control/execute oglsini.mac
+#/GsimEventAction/setVisualizationMode 1
+
+/GsimDetector/world/setParameters 5*m 5*m 60*m
+/GsimDetector/world/setOuterVisibility 0
+/GsimDetectorFactory/GsimE14/buildAndRegister e14 /world 1
+
+/GsimDetectorFactory/GsimTube/buildAndRegister os0 /world/e14 0 0  29.5*m+1./2.*cm  0 0 0
+/GsimDetectorFactory/GsimTube/buildAndRegister os1 /world/e14 0 0 -29.5*m-1./2.*cm  0 0 0
+/GsimDetectorFactory/GsimTube/buildAndRegister os2 /world/e14 0 0 0                 0 0 0
+/GsimDetector/world/e14/os0/setParameters 0 2.41*m 1*cm 0 360*deg
+/GsimDetector/world/e14/os1/setParameters 0 2.41*m 1*cm 0 360*deg
+/GsimDetector/world/e14/os2/setParameters 2.4*m 2.41*m 59*m 0 360*deg
+/GsimDetector/world/e14/os0/setOuterMaterial G4_Galactic
+/GsimDetector/world/e14/os1/setOuterMaterial G4_Galactic
+/GsimDetector/world/e14/os2/setOuterMaterial G4_Galactic
+/GsimDetector/world/e14/os0/setSensitiveDetectorWithName os 0
+/GsimDetector/world/e14/os1/setSensitiveDetectorWithName os 1
+/GsimDetector/world/e14/os2/setSensitiveDetectorWithName os 2
+/GsimDetector/world/e14/os0/setOuterVisibility 0
+/GsimDetector/world/e14/os1/setOuterVisibility 0
+/GsimDetector/world/e14/os2/setOuterVisibility 0
+
+/GsimDetector/world/e14/setFastSimulationLevel 6
+
+/GsimSpectrumFactory/GsimE14Spectrum/buildAndRegister
+/GsimSpectrum/GsimE14Spectrum/addSpectrum Special
+
+/GsimDetector/world/e14/setThisAndDaughterHitsStore true
+
+
+/GsimDetectorManager/update
+/run/initialize
+#/run/beamOn 20

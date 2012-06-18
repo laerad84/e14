@@ -1,0 +1,41 @@
+/GsimMaterialFactory/GsimOpticalMaterial/build 
+/GsimPhysicsListFactory/GsimLowEnergyEMOp/buildAndRegister
+/GsimPrimaryGeneratorActionFactory/GsimGeneralParticleSource/buildAndRegister gps
+/gps/particle opticalphoton
+/gps/energy 2 eV
+/gps/position 0 0 -0.6 cm
+/gps/direction 0 0 1
+/gps/polarization 1 0 0
+
+
+/GsimDetector/world/setOuterVisibility false
+/GsimDetectorFactory/GsimBox/buildAndRegister box /world
+/GsimDetector/world/box/setOuterMaterial GsimOpticalCsI
+/GsimDetector/world/setOuterMaterial GsimOpticalAir
+
+/control/execute oglsini.mac
+/GsimEventAction/setVisualizationMode 1
+
+/GsimDetectorManager/update 
+
+
+
+
+/gps/direction 0 0.94 0.5
+/gps/polarization 0 0.5 -0.94
+/run/initialize
+/run/beamOn 10000
+
+/control/echo TM mode with Brewster angle (10000 events)
+/control/echo waiting 10 sec
+/control/shell sleep 10
+
+
+
+/gps/direction 0 0.94 0.5
+/gps/polarization 1 0 0
+/run/beamOn 10
+
+/control/echo TE mode (10 events)
+/control/echo waiting 10 sec
+/control/shell sleep 10

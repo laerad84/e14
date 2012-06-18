@@ -1,0 +1,34 @@
+/GsimPhysicsListFactory/QGSP_BERT/buildAndRegister
+/GsimPrimaryGeneratorActionFactory/GsimGeneralParticleSource/buildAndRegister gps
+
+/control/execute oglini.mac
+/GsimEventAction/setVisualizationMode 1
+
+/GsimTrackingAction/setBriefTrackStore true
+
+/control/execute t1target.mac
+
+/GsimDetector/world/det0/setSensitiveDetectorWithName det0
+/GsimDetector/world/det0/setFastSimulationLevel 5
+/GsimDetector/world/target0u/setSensitiveDetectorWithName target0u
+/GsimDetector/world/target0u/setFastSimulationLevel 5
+/GsimDetectorManager/update
+
+/gps/position 0 0 -1 nm
+
+/gps/ang/type beam2d
+/gps/ang/sigma_x 0.001 rad
+/gps/ang/sigma_y 0.0023 rad
+
+/gps/ang/rot1 -1 0 0
+/gps/ang/rot2 0 1 0
+
+/gps/pos/type Beam
+/gps/pos/sigma_x 1.3 mm
+/gps/pos/sigma_y 1.3 mm
+
+
+/gps/particle proton
+/gps/energy 30. GeV
+/run/initialize
+

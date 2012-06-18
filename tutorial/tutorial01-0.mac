@@ -1,0 +1,42 @@
+#########################################################
+# detector(box) in the world
+#########################################################
+
+
+#construct physics at first (world also)
+/GsimPhysicsListFactory/QGSP_BERT/buildAndRegister
+
+#constrcut gun next
+/GsimPrimaryGeneratorActionFactory/GsimGeneralParticleSource/buildAndRegister gps
+#gun setup anywere after construction
+/gps/particle gamma
+/gps/energy 1 GeV
+/gps/direction 0 0 1
+/gps/position  0 0 -1 m
+
+#world setup (world is already constructed here)
+/GsimDetector/world/setParameters 5*m 5*m 50*m
+/GsimDetector/world/setOuterVisibility false
+
+#construct detectors
+# construct GsimBox in the world
+#    1) at position (0,0,0)
+#          with rotation (0,0,0) => x-rot -> y-rot -> z-rot
+/GsimDetectorFactory/GsimBox/buildAndRegister box /world 0*cm 0*cm 0*cm 0*deg 0*deg 0*deg
+#    2) set dimension
+/GsimDetector/world/box/setParameters 5*cm 5*cm 5*cm
+#    3) assign material
+/GsimDetector/world/box/setOuterMaterial G4_PbWO4
+#    4) assign color
+/GsimDetector/world/box/setOuterColor blue
+
+# update all the modification
+/GsimDetectorManager/update
+
+# for visualization
+/GsimEventAction/setVisualizationMode 1
+/control/execute oglsini.mac
+
+# shoot 1 particle
+/run/initialize
+/run/beamOn 1

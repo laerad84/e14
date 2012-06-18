@@ -1,0 +1,63 @@
+/control/alias ang  16.*deg
+/control/alias dis  537.8*mm
+/control/alias radi 15.0*mm
+/control/alias th   0.001*mm
+/control/alias zpos {dis}*cos({ang})
+/control/alias len  2.*{radi}*sin({ang})
+/control/alias rm  {dis}*sin({ang})
+/control/alias dr  {radi}*cos({ang})
+/control/alias r0  ({rm}+{dr})
+/control/alias r1  ({rm}-{dr})
+
+
+
+#######################################################################
+/GsimDetector/world/setParameters 1*m 1*m 2.2*m
+/GsimDetector/world/setOuterMaterial G4_Galactic
+/GsimDetector/world/setOuterVisibility false
+
+/GsimDetectorFactory/GsimTube/buildAndRegister target0 /world -130*mm 0 -33*mm+21.7*mm/2. 0 0 0
+/GsimDetectorFactory/GsimTube/buildAndRegister target1 /world -130*mm 0 -33*mm+21.7*mm+3*mm+11.2*mm/2    0 0 0
+/GsimDetectorFactory/GsimTube/buildAndRegister target2 /world -130*mm 0 -33*mm+21.7*mm+3*mm+11.2*mm+3*mm+8.3*mm/2. 0 0 0
+/GsimDetectorFactory/GsimTube/buildAndRegister target3 /world -130*mm 0 -33*mm+21.7*mm+3*mm+11.2*mm+3*mm+8.3*mm+3*mm+6.8*mm/2. 0 0 0
+/GsimDetectorFactory/GsimTube/buildAndRegister target4 /world -130*mm 0 -33*mm+21.7*mm+3*mm+11.2*mm+3*mm+8.3*mm+3*mm+6.8*mm+3*mm+5.9*mm/2 0 0 0
+/GsimDetector/world/target0/setOuterMaterial G4_Ni
+/GsimDetector/world/target1/setOuterMaterial G4_Ni
+/GsimDetector/world/target2/setOuterMaterial G4_Ni
+/GsimDetector/world/target3/setOuterMaterial G4_Ni
+/GsimDetector/world/target4/setOuterMaterial G4_Ni
+/GsimDetector/world/target0/setParameters 0 140*mm 21.7*mm 0*deg 360*deg
+/GsimDetector/world/target1/setParameters 0 140*mm 11.2*mm 0*deg 360*deg
+/GsimDetector/world/target2/setParameters 0 140*mm  8.3*mm 0*deg 360*deg
+/GsimDetector/world/target3/setParameters 0 140*mm  6.8*mm 0*deg 360*deg
+/GsimDetector/world/target4/setParameters 0 140*mm  5.9*mm 0*deg 360*deg
+/GsimDetector/world/target0/setOuterColor blue
+/GsimDetector/world/target1/setOuterColor blue 
+/GsimDetector/world/target2/setOuterColor blue
+/GsimDetector/world/target3/setOuterColor blue
+/GsimDetector/world/target4/setOuterColor blue
+
+
+/GsimDetectorFactory/GsimTube/buildAndRegister window0 /world 0 0 -333*mm+4.5*mm/2 0 0 0
+/GsimDetectorFactory/GsimTube/buildAndRegister window1 /world 0 0 +146*mm-4.5*mm/2 0 0 0
+/GsimDetector/world/window0/setOuterMaterial G4_Be
+/GsimDetector/world/window1/setOuterMaterial G4_Be
+/GsimDetector/world/window0/setParameters 0 200*mm 4.5*mm 0*deg 360*deg
+/GsimDetector/world/window1/setParameters 0 200*mm 4.5*mm 0*deg 360*deg
+/GsimDetector/world/window0/setOuterColor red
+/GsimDetector/world/window1/setOuterColor red
+
+# just before the target
+#/GsimDetectorFactory/GsimTube/buildAndRegister det0 /world 0 0 (-33*mm+21.7*mm+3*mm+11.2*mm+3*mm+8.3*mm+3*mm+6.8*mm+3*mm+5.9*mm)+1*mm 0 0 0
+#/GsimDetector/world/det0/setOuterMaterial G4_Galactic
+#/GsimDetector/world/det0/setParameters 0 300*mm 2*mm 0*deg 360*deg
+#/GsimDetector/world/det0/setOuterColor yellow
+
+# Cu shield aperture
+/GsimDetectorFactory/GsimPolycone2/buildAndRegister det1 /world 0 0 {zpos} 0 0 0
+/GsimDetector/world/det1/setParameters 0*deg 360*deg {len} {r0} {r0}+{th} {r1} {r1}+{th}
+/GsimDetector/world/det1/setOuterMaterial G4_Galactic
+/GsimDetector/world/det1/setOuterColor yellow
+
+/GsimDetectorManager/update
+

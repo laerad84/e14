@@ -1,0 +1,2 @@
+/GsimDetector/world/bar/layer/sci/cloneDetector 0 {id}*({sci_size}+{sep_thick})-({sci_num}-1)/2*({sci_size}+{sep_thick}) 0 0 0 0 -1
+/GsimDetector/world/bar/layer/sep/cloneDetector 0 {id}*({sci_size}+{sep_thick})+({sci_size}/2.+{sep_thick}/2.)-({sci_num}-1)/2*({sci_size}+{sep_thick}) 0

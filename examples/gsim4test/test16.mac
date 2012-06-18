@@ -1,0 +1,67 @@
+# for GsimLowEnergyEMOp, materials to be used should be declared beforehand.
+/GsimMaterialFactory/GsimOpticalMaterial/build
+/GsimPhysicsListFactory/GsimLowEnergyEMOp/buildAndRegister
+/GsimPrimaryGeneratorActionFactory/GsimGeneralParticleSource/buildAndRegister gps
+/gps/particle opticalphoton
+/gps/energy 2 eV
+/gps/position 0 0 20 cm
+/gps/direction 0 0 1
+/gps/polarization 1 0 0
+
+/GsimDetector/world/setOuterVisibility false
+/GsimDetector/world/setOuterMaterial GsimOpticalVacuum
+
+/GsimDetectorFactory/GsimBox/buildAndRegister air /world 0 0 5*cm 0 0 0
+/GsimDetector/world/air/setParameters 5*cm+0.2*mm 5*cm+0.2*mm 50*cm+10*cm
+/GsimDetector/world/air/setOuterMaterial GsimOpticalAir
+/GsimDetector/world/air/setOuterVisibility false
+
+/GsimDetectorFactory/GsimBox/buildAndRegister csi /world/air 0 0 -5*cm 0 0 0
+/GsimDetector/world/air/csi/setParameters 5*cm 5*cm 50*cm
+/GsimDetector/world/air/csi/setOuterMaterial GsimOpticalCsI
+
+/GsimDetectorFactory/GsimTube/buildAndRegister grease /world/air 0 0 -5*cm+25.*cm+0.1/2.*mm
+/GsimDetector/world/air/grease/setParameters 0 2*cm 0.1*mm 0 2*pi*rad
+/GsimDetector/world/air/grease/setOuterMaterial GsimOpticalGrease
+/GsimDetector/world/air/grease/setOuterColor gray70
+
+/GsimDetectorFactory/GsimTube/buildAndRegister glass /world/air 0 0 -5*cm+25.*cm+0.1*mm+1./2.*mm
+/GsimDetector/world/air/glass/setParameters 0 2*cm 1*mm 0 2*pi*rad
+/GsimDetector/world/air/glass/setOuterMaterial GsimOpticalPhotoCathode
+/GsimDetector/world/air/glass/setOuterColor yellow
+
+/GsimDetectorFactory/GsimTube/buildAndRegister pmt /world/air 0 0 -5*cm+25.*cm+0.1*mm+1.*mm+(100-1.1)/2.*mm
+/GsimDetector/world/air/pmt/setParameters 0 2*cm (100-1.1)*mm 0 2*pi*rad
+/GsimDetector/world/air/pmt/setOuterMaterial GsimOpticalVacuum
+
+
+/GsimSurfaceFactory/build air_world /world/air /world
+/GsimSurface/air_world/setSurfaceProperty dielectric_metal polished glisur 0
+/GsimSurface/air_world/setReflectivity 100 0.9 1000 0.9
+
+/GsimSurfaceFactory/build glass_pmt /world/air/glass /world/air/pmt
+/GsimSurface/glass_pmt/setSurfaceProperty dielectric_metal polished glisur 0
+# transparency of UV glass window
+/GsimSurface/glass_pmt/setEfficiency 180 0 200 0.4 240 0.8 260 0.9 1000 0.9
+# all opticalphotons are stopped at the boundary
+/GsimSurface/glass_pmt/setReflectivity 100 0 1000 0
+
+/GsimSurfaceFactory/build air_pmt /world/air /world/air/pmt
+/GsimSurface/air_pmt/setSurfaceProperty dielectric_metal polished glisur 0
+/GsimSurface/air_pmt/setReflectivity 100 0 1000 0
+/GsimSurface/air_pmt/setEfficiency 100 0 1000 0
+
+/GsimDetector/world/air/glass/setSensitiveDetectorWithName pmt
+/GsimDetector/world/air/glass/setHitsStore true
+
+
+#/control/execute oglsini.mac
+#/GsimEventAction/setVisualizationMode 1
+
+/gps/particle gamma
+/gps/energy 1 MeV
+/gps/position 0 10 0 cm
+/gps/direction 0 -1 0
+
+/GsimDetectorManager/update 
+/run/initialize

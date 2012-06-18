@@ -1,0 +1,22 @@
+#!/bin/sh
+# This is for commiter make new release.
+
+tag=`date +%Y%m%d_%H%M`
+
+svn copy \
+https://justice.hep.sci.osaka-u.ac.jp/svn/e14lib/trunk
+https://justice.hep.sci.osaka-u.ac.jp/svn/e14lib/tags/${tag} \
+-m "New release, ${tag}." || \
+( echo "svn copy is failed."; exit 1 )
+
+
+dir=`pwd`
+cd /tmp
+svn co https://justice.hep.sci.osaka-u.ac.jp/svn/e14lib/trunk/release-info
+cd release-info
+cat release-pro > release-old
+echo ${tag} > release-pro
+svn commit -m "New release, ${tag}."
+cd ..
+rm -fr release-info
+cd ${dir}

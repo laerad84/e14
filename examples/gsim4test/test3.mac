@@ -1,0 +1,40 @@
+/GsimPhysicsListFactory/QGSP_BERT/buildAndRegister 
+/GsimPrimaryGeneratorActionFactory/GsimGeneralParticleSource/buildAndRegister gps
+/gps/particle pi+
+/gps/energy 1 GeV
+/gps/direction 0 0 1
+/control/execute oglini.mac
+/GsimEventAction/setVisualizationMode 1
+#/GsimEventAction/setAccumulationNumber -1
+/GsimTrackingAction/setBriefTrackStore true
+
+/GsimDetector/world/setParameters 30*cm 30*cm 30*cm
+/GsimDetectorFactory/GsimBox/buildAndRegister box /world
+/GsimDetector/world/box/setParameters 10*cm 10*cm 10*cm
+/GsimDetector/world/box/setTranslationVector 0 0 6*cm
+/GsimDetectorFactory/GsimBox/buildAndRegister box2 /
+/GsimDetector/box2/setSensitiveDetector box
+/GsimDetectorManager/update
+/GsimDetectorManager/print
+/run/initialize
+/run/beamOn 1
+
+
+/GsimDetector/box2/placeDetector /world/box
+/GsimDetectorManager/update
+/GsimDetectorManager/print
+/GsimDetectorManager/renewMessenger
+
+/run/beamOn 1
+
+/GsimDetector/world/box/box2/setFastSimulationLevel 5
+/GsimDetectorManager/update
+/run/beamOn 1
+
+/GsimDetector/world/box/setFastSimulationLevel 5
+/GsimDetectorManager/update
+/run/beamOn 1
+
+/GsimDetector/world/box/setSensitiveDetector
+/GsimDetectorManager/update
+/run/beamOn 1

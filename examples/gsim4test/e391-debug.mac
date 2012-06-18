@@ -1,0 +1,62 @@
+/GsimPhysicsListFactory/QGSP_BERT/buildAndRegister 
+/GsimPrimaryGeneratorActionFactory/GsimGunManager/buildAndRegister
+/GsimPrimaryGeneratorActionFactory/GsimGeneralParticleSource/buildAndRegister gps
+#/gps/particle KLpi0pi0
+/gps/particle geantino
+/gps/energy 1 GeV
+/gps/position 0 0 -1 m
+/gps/direction 0 0 1
+#/control/execute oglini.mac
+#/GsimEventAction/setVisualizationMode 1
+#/GsimEventAction/setAccumulationNumber -1
+#/GsimTrackingAction/setBriefTrackStore false
+
+/GsimDetector/world/setParameters 5*m 5*m 24*m
+/GsimDetector/world/setOuterVisibility 0
+/GsimDetectorFactory/GsimDetector/buildAndRegister e391 /world
+
+/GsimDetectorFactory/GsimTube/buildAndRegister line /world/e391 0 0 -1180./2.*cm 0 0 0
+/GsimDetector/world/e391/line/setOuterMaterial GsimLowVacuum
+/GsimDetector/world/e391/line/setParameters 0 4.1*cm 1180*cm 0*deg 360*deg
+/GsimDetector/world/e391/line/setOuterColor blue
+/GsimDetector/world/e391/line/setOuterVisibility false
+
+/GsimDetectorFactory/GsimTube/buildAndRegister lvac /world/e391 0 0 4*m 0 0 0
+/GsimDetector/world/e391/lvac/setOuterMaterial GsimLowVacuum
+/GsimDetector/world/e391/lvac/setParameters 0 150*cm 8*m 0*deg 360*deg
+/GsimDetector/world/e391/lvac/setOuterVisibility false
+
+/GsimDetectorFactory/GsimTube/buildAndRegister hvac /world/e391/lvac 0 0 (-4.*m+275*cm+288./2.*cm) 0 0 0
+/GsimDetector/world/e391/lvac/hvac/setOuterMaterial GsimHighVacuum
+/GsimDetector/world/e391/lvac/hvac/setParameters 0 100*cm 288*cm 0*deg 360*deg
+/GsimDetector/world/e391/lvac/hvac/setOuterVisibility false
+
+
+/GsimDetectorFactory/GsimE391FBAR/buildAndRegister fbar /world/e391/lvac 0 0 -4*m+(275./2.)*cm  0 0 0
+/GsimDetectorFactory/GsimE391CBAR/buildAndRegister cbar /world/e391/lvac 0 0 -4*m+(134.8+550./2.)*cm  0 0 0
+/GsimDetectorFactory/GsimE391BCV/buildAndRegister  bcv  /world/e391/lvac 0 0 -4*m+(135+550/2.)*cm           0 0 0
+/GsimDetectorFactory/GsimE391CV/buildAndRegister   cv   /world/e391/lvac 0 0 -4*m+(609.8-(45.-0.6)/2.)*cm  0 0 0
+/GsimDetectorFactory/GsimE391CC02/buildAndRegister cc02 /world/e391/lvac 0 0 -4*m+(275.-((0.5+2.0*0.0375+0.1+0.005*2.0)*14.0+(0.5+2.0*0.0375+0.2+0.005*2.0)*29.0+(1.5*2.0+0.5))/2)*cm 0 0 0
+
+/GsimDetectorFactory/GsimE391CC03/buildAndRegister cc03 /world/e391/lvac 0 0 -4*m+(609.8+180./2.-180./2.+55./2.)*cm  0 0 0
+/GsimDetectorFactory/GsimE391SAND/buildAndRegister sand /world/e391/lvac 0 0 -4*m+(609.8+180./2.-180/2.+5+30.0/2.)*cm  0 0 0
+/GsimDetectorFactory/GsimE391CSI/buildAndRegister  csi  /world/e391/lvac 0 0 -4*m+(609.8+180./2.)*cm  0 0 0
+/GsimDetectorFactory/GsimE391CC04/buildAndRegister cc04 /world/e391/lvac/csi 0 0 (-180./2.+(614.8-609.8)+95.5+(((32+2)*0.5+32*0.2+(2*32+2-1)*0.025)+(0.8+3.)*2.)/2.)*cm 0 0 0
+/GsimDetectorFactory/GsimE391CC05/buildAndRegister cc05 /world/e391 0 0 (614.8+259.3+(((30+2+2)*0.5+32*0.2+(2*2+2-1)*0.025)+(0.8+3.)*2.)/2.)*cm 0 0 0
+
+/GsimDetectorFactory/GsimE391CC00/buildAndRegister cc00 /world/e391 0 0 (-59.0-((0.5+2.0+0.1)*10+0.5)/2.)*cm  0 0 0
+/GsimDetectorFactory/GsimE391CC06/buildAndRegister cc06 /world/e391 0 0 (614.8+310.8+15.0/2.)*cm  0 0 0
+/GsimDetectorFactory/GsimE391CC07/buildAndRegister cc07 /world/e391 0 0 (614.8+385.8+15.0/2.)*cm  0 0 0
+/GsimDetectorFactory/GsimE391BHCV/buildAndRegister bhcv /world/e391 0 0 (614.8+414.5+7.0+5.0)*cm  0 0 0
+/GsimDetectorFactory/GsimE391BA/buildAndRegister   ba   /world/e391 0 0 (614.8+444.5+51./2.+10.)*cm  0 0 0
+
+/GsimDetectorManager/update
+
+/process/inactivate eBrem
+/process/inactivate conv
+/process/inactivate compt
+/process/inactivate phot
+/process/inactivate KaonZeroLInelastic
+
+/run/initialize
+#/run/beamOn 20

@@ -1,0 +1,33 @@
+#########################################################
+# virtual detector in the world
+#########################################################
+
+
+#construct physics at first (world also)
+/GsimPhysicsListFactory/QGSP_BERT/buildAndRegister
+
+#constrcut gun next
+/GsimPrimaryGeneratorActionFactory/GsimGeneralParticleSource/buildAndRegister gps
+#gun setup anywere after construction
+/gps/particle gamma
+/gps/energy 1 GeV
+/gps/direction 0 0 1
+/gps/position  0 0 -1 m
+
+#world setup(world is already constructed here)
+/GsimDetector/world/setParameters 5*m 5*m 50*m
+/GsimDetector/world/setOuterVisibility false
+
+#construct virtual detector 
+/GsimDetectorFactory/GsimVirt/buildAndRegister virt /world 0*cm 0*cm 0*cm 0*deg 0*deg 0*deg
+
+# update all the modification
+/GsimDetectorManager/update
+
+# for visualization
+/GsimEventAction/setVisualizationMode 1
+/control/execute oglsini.mac
+
+# shoot 1 particle
+/run/initialize
+/run/beamOn 1

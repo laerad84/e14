@@ -1,0 +1,381 @@
+#!/usr/bin/python
+# e14export [package] [dev, pro, old, release]
+# 1. svn repositry
+# trunk/e14/sources/...
+#           examples/...
+#           config/....
+# tags/e20070214000/e14/..
+#
+# 2. exproted directories
+#    e14export pkg dev
+#    dev/setup.csh
+#    dev/setup.sh
+#    dev/e14/sources/... 
+#    dev/e14/examples/...
+#    dev/e14/config/ ....
+#    dev/e14/scripts/ ....
+
+import os
+import sys
+import string
+import re
+import subprocess
+
+def e14check(TAG):
+
+    RELREPO="https://justice.hep.sci.osaka-u.ac.jp/svn/e14lib/"
+    
+    REV="trunk"
+    if(TAG=="pro" or TAG=="old"):
+        comline='svn --username koto cat '
+        comline+=RELREPO
+        comline+='release-info/release-'
+        comline+=TAG
+        res = subprocess.Popen(comline,shell=True,
+                               stdout=subprocess.PIPE).communicate()[0]
+        res=res[0:-1]
+        
+        if(res==""):
+            tmpo="No "
+            tmpo+=TAG
+            tmpo+=" version."
+            print tmpo
+            sys.exit(1)
+        REV="tags/"
+        REV+=res
+    elif(TAG=="dev"):
+        REV="trunk"
+    else:
+        REV="tags/"
+        REV+=TAG
+    return REV
+
+def e14init(TAG,REV):
+    # make top directories for export
+    if(not os.access(TAG,os.F_OK)):
+        comline="mkdir "
+        comline+=TAG
+        subprocess.Popen(comline,shell=True,
+                         stdout=subprocess.PIPE).communicate()[0]
+        
+    fname=TAG
+    fname+="/release"
+    if(not os.access(fname,os.F_OK)):
+        fo = open(fname,"w")
+        fo.write(REV)
+        fo.close()
+
+    fin = open(fname,"r")
+    line = fin.readline()
+    fin.close()
+    if not line:
+        tmpo="No lines in "
+        tmpo+=fname
+        tmpo+="."
+        print tmpo
+        print "Unsupported e14 library."
+        print "Please move "+TAG+" directory and run e14export again."
+        sys.exit(1)
+        
+    if(line[-1:]=="\n"): line=line[0:-1]
+    
+    if(line != REV):
+        tmpo="Rev. , "
+        tmpo+=line
+        tmpo+=", is different from "
+        tmpo+=REV
+        tmpo+="."
+        print tmpo
+        print "Directory, "+TAG+" is obsolete."
+        print "Please move "+TAG+" directory and run e14export again."
+        sys.exit(1)
+        
+    # make setup.sh
+    fname=TAG
+    fname+="/setup.sh"
+    if(not os.access(fname,os.F_OK)):
+        fo = open(fname,"w")
+        dir=os.getcwd()
+        dir+="/"
+        dir+=TAG
+        dir+="/e14"
+        tmpo="export E14_TOP_DIR="
+        tmpo+=dir
+        tmpo+="\n"
+        fo.write(tmpo)
+    
+        tmpo="source "
+        tmpo+=dir
+        tmpo+="/scripts/e14.sh\n"
+        fo.write(tmpo)
+        fo.close()
+
+    # make setup.csh
+    fname=TAG
+    fname+="/setup.csh"
+    if(not os.access(fname,os.F_OK)):
+        fo = open(fname,"w")
+        dir=os.getcwd()
+        dir+="/"
+        dir+=TAG
+        dir+="/e14"
+        tmpo="setenv E14_TOP_DIR "
+        tmpo+=dir
+        tmpo+="\n"
+        fo.write(tmpo)
+    
+        tmpo="source "
+        tmpo+=dir
+        tmpo+="/scripts/e14.csh\n"
+        fo.write(tmpo)
+        fo.close()
+        
+    #REPO
+    REPO="https://justice.hep.sci.osaka-u.ac.jp/svn/e14lib/"
+    REPO+=REV
+    REPO+="/"
+    
+    comline='svn --username koto list -R '
+    comline+=REPO
+    res = subprocess.Popen(comline,shell=True,
+                           stdout=subprocess.PIPE).communicate()[0]
+    res=res[0:-1]
+    
+    if(res==''):
+        tmpo="Wrong repository, "
+        tmpo+=REPO
+        tmpo+="."
+        print tmpo
+        sys.exit(1)
+
+    #e14dir
+    fname=TAG
+    fname+="/.e14dir"
+    fo = open(fname,"w")
+    fo.write(res)
+    fo.close()
+    return REPO
+
+def e14fin(TAG,REV,REPO):
+    # scripts
+    dir=TAG
+    dir+="/e14"
+    if(os.access(dir,os.F_OK)):
+        comline="cd "
+        comline+=dir
+        comline+=" && "
+        comline+="svn export "
+        comline+=REPO
+        comline+="/e14/scripts"
+        subprocess.Popen(comline,shell=True,
+                         stdout=subprocess.PIPE).communicate()[0]
+        
+    mf=TAG
+    mf+="/e14/Makefile"
+    if(not os.access(mf,os.F_OK)):
+        fo=open(mf,"w")
+        line='SUBDIRS += $(shell grep -v "\#" EXPORTED 2>/dev/null)\n'
+        fo.write(line)
+        line='include $(E14_CONFIG_DIR)/Makefile.bin\n'
+        fo.write(line)
+        fo.close()
+        
+    
+def e14search(PKG,TAG,REV,REPO):
+
+    fname=TAG
+    fname+="/.e14dir"
+
+    list=[]
+    fin = open(fname,"r")
+    while 1:
+        line = fin.readline()
+        if not line: break
+        if(line[-1:]=="\n"): line=line[0:-1]
+        
+        pat=''
+        if(PKG  == 'e14'):
+            pat='e14/REQUIREMENTS'
+        else :
+            pat='.*/'
+            pat+=PKG
+            pat+='/REQUIREMENTS'
+            
+        res=re.match(pat,line)
+        if(res):           
+            list.append(line[0:-13])
+    fin.close()
+    if(len(list)==0):
+        tmpo="No package, "
+        tmpo+=PKG
+        tmpo+=", is found."
+        print tmpo
+        sys.exit(1)
+    elif(len(list)>1):
+        tmpo="Multiple packages are found for "
+        tmpo+=PKG
+        tmpo+="."
+        print tmpo
+        print list
+        sys.exit(1)
+
+    PACKAGEPATH=list[0]
+    tmpo="Package, "
+    tmpo+=PKG
+    tmpo+=", is found in "
+    tmpo+=PACKAGEPATH
+    print tmpo
+    
+    return PACKAGEPATH
+
+def e14required(PKG,TAG,PACKAGEPATH):
+    dir=TAG
+    dir+="/"
+    dir+=PACKAGEPATH
+    
+    comline="find "
+    comline+=dir
+    comline+=" -name REQUIREMENTS"
+    res = subprocess.Popen(comline,shell=True,
+                           stdout=subprocess.PIPE).communicate()[0]
+    res=res[0:-1]
+    list=re.split("\n",res)
+    REQLIST=[]
+    for i in list:
+        fin = open(i,"r")
+        while 1:
+            line = fin.readline()
+            if not line: break
+            if(line[0:1]=="#"): line=line[1:]
+            if(line[-1:]=="\n"): line=line[0:-1]
+            REQLIST.append(line)
+        fin.close()
+    REQLIST.sort()
+    return REQLIST
+    
+def e14export(PKG,TAG,REV,REPO):
+    
+    PACKAGEPATH=e14search(PKG,TAG,REV,REPO)
+    
+    dir=TAG
+    dir+="/"
+    dir+=PACKAGEPATH
+
+    if(os.access(dir,os.F_OK)):
+        tmpo="Package, "
+        tmpo+=PKG
+        tmpo+=", is already exported."
+        print tmpo
+        return
+        
+    mdir=dir[0:-len(PKG)]
+    if(not os.access(mdir,os.F_OK)):
+        comline="mkdir -p "
+        comline+=mdir
+        subprocess.Popen(comline,shell=True,
+                         stdout=subprocess.PIPE).communicate()[0]
+        
+    comline="cd "
+    comline+=mdir
+    comline+=" && "
+    comline+="svn export "
+    comline+=REPO
+    comline+="/"
+    comline+=PACKAGEPATH
+    subprocess.Popen(comline,shell=True,
+                     stdout=subprocess.PIPE).communicate()[0]
+    
+    tmpo="Package, "
+    tmpo+=PKG
+    tmpo+=", is exported."
+    print tmpo
+
+    REQLIST=e14required(PKG,TAG,PACKAGEPATH)
+
+    prev=""
+    for i in REQLIST:
+        if(i!=prev):
+            comline="whereis "
+            comline+="lib"
+            comline+=i
+            comline+=".so"
+            res = subprocess.Popen(comline,shell=True,
+                                   stdout=subprocess.PIPE).communicate()[0]
+            res=res[0:-1]
+            list=re.split(":",res)
+            
+            if(list[1]!=""):
+                tmpo="Library, "
+                tmpo+=i
+                tmpo+=", is found"
+                tmpo+=", required from "
+                tmpo+=PKG
+                tmpo+="."
+                print tmpo
+            else:
+                tmpo="Package, "
+                tmpo+=i
+                tmpo+=", is to be exported"
+                tmpo+=", required from "
+                tmpo+=PKG
+                tmpo+="."
+                print tmpo
+                e14export(i,TAG,REV,REPO)
+
+    mf=dir
+    mf+="/Makefile"
+    addline=PACKAGEPATH[4:]
+    addline+="\n"
+    if(os.access(mf,os.F_OK)):
+        fname=TAG
+        fname+="/e14/EXPORTED"
+        isadd=True
+        if(os.access(fname,os.F_OK)):
+            fin = open(fname,"r")
+            while 1:
+                line = fin.readline()
+                if not line: break
+                if(line == addline):
+                    isadd=False
+            fin.close()
+        if(isadd):
+            fo = open(fname,"a")
+            fo.write(addline)
+            fo.close()
+        
+    return
+
+def e14usage():
+    print "e14export [package] [dev, pro, old, release]"
+    print "  package : e14 package."
+    print "  dev, pro, old, release tag : "
+    print "Description:"
+    print " The package is exported from subversion repository."
+    print " Required packages are also exported automatically ."
+    print " ./.*/setup.*sh is for the environment."
+
+#############################################
+# main
+#############################################
+nf = len(sys.argv)-1;
+if(not (nf>=0 and nf<=3)):
+    print "# of argument error."
+    sys.exit(1)
+    
+PKG="e14"
+TAG="pro"
+
+if(nf==1):
+    if( sys.argv[1] == "-h" or sys.argv[1] == "--help"):
+        e14usage()
+        sys.exit(0)
+
+if(nf>=1):
+    PKG=sys.argv[1]
+if(nf>=2):
+    TAG=sys.argv[2]
+    
+REV=e14check(TAG)
+REPO=e14init(TAG,REV)
+e14export(PKG,TAG,REV,REPO)
+e14fin(TAG,REV,REPO)

@@ -1,0 +1,43 @@
+/GsimPhysicsListFactory/QGSP_BERT/buildAndRegister
+/GsimPrimaryGeneratorActionFactory/GsimGeneralParticleSource/buildAndRegister gps
+
+/gps/particle KL3pi0
+
+#/gps/energy 1 GeV
+#/gps/position 0 0 -1 m
+#/gps/direction 0 0 1
+#/control/execute oglsini.mac
+#/GsimEventAction/setVisualizationMode 1
+#/GsimEventAction/setAccumulationNumber -1
+/GsimTrackingAction/setBriefTrackStore true
+
+/GsimDetector/world/setParameters 5*m 5*m 60*m
+/GsimDetector/world/setOuterVisibility 0
+/GsimDetectorFactory/GsimDetector/buildAndRegister e14 /world
+
+#/GsimDetectorFactory/GsimE14Membrane/buildAndRegister mbn  /world/e14  0 0 0 0 0 0
+#/GsimDetectorFactory/GsimE14CBAR/buildAndRegister     cbar /world/e14  0 0 (134.8+550./2.)*cm 0 0 0
+#/GsimDetectorFactory/GsimE14FBAR/buildAndRegister     fbar /world/e14  0 0 275./2.*cm 0 0 0
+#/GsimDetectorFactory/GsimE14BCV/buildAndRegister      bcv  /world/e14  0 0 (134.8+550./2.)*cm 0 0 0
+
+/GsimDetectorFactory/GsimE14CV/buildAndRegister       cv   /world/e14  0.5*cm 0 614.8*cm 0 0 0
+/GsimDetectorFactory/GsimE14CSI/buildAndRegister      csi  /world/e14  0.5*cm 0 (609.8+180./2.)*cm 0 0 0
+/GsimDetectorFactory/GsimE14OEV/buildAndRegister      oev  /world/e14  0 0 (614.8+50./2.)*cm 0 0 0
+#/GsimDetectorFactory/GsimE14CC00/buildAndRegister     cc00 /world/e14  0 0 (-59.0+((0.5+2.+0.1)*10.+0.5)/2.)*cm 0 0 0
+#/GsimDetectorFactory/GsimE14CC01/buildAndRegister     cc01 /world/e14  0 0 (0+((0.5+2.*0.0375+0.1+0.005*2.)*14.+(0.5+2.*0.0375+0.2+0.005*2.)*29.+1.5*2.+0.5)/2.)*cm 0 0 0
+
+#/GsimDetectorFactory/GsimE14CC02/buildAndRegister     cc02 /world/e14  0 0 (275.-30.-((0.5+2.*0.0375+0.1+0.005*2.)*14.+(0.5+2.*0.0375+0.2+0.005*2.)*29.+1.5*2.+0.5)/2.)*cm 0 0 0
+/GsimDetectorFactory/GsimE14CC03/buildAndRegister     cc03 /world/e14  0.5*cm 0 (614.8+50./2.)*cm 0 0 0
+#/GsimDetectorFactory/GsimE14CC04/buildAndRegister     cc04 /world/e14  0 0 (614.8+95.5+(7.+0.03)*3./2.)*cm 0 0 0
+#/GsimDetectorFactory/GsimE14CC05/buildAndRegister     cc05 /world/e14  0 0 (614.8+250.+(7.+0.03)*3./2.)*cm 0 0 0
+#/GsimDetectorFactory/GsimE14CC06/buildAndRegister     cc06 /world/e14  0 0 (614.8+350.+(7.+0.03)*3./2.)*cm 0 0 0
+#/GsimDetectorFactory/GsimE14BHCV/buildAndRegister     bhcv /world/e14  0 0 (614.8+400.+0.3*4./2.)*cm 0 0 0 1
+#/GsimDetectorFactory/GsimE14BHPV/buildAndRegister     bhpv /world/e14  0 0 (614.8+430.+200.+36.*25./2.)*cm 0 0 0
+/GsimEventAction/setSkipEmptyData true
+
+/GsimSpectrumFactory/GsimE14Spectrum/buildAndRegister
+/GsimSpectrum/GsimE14Spectrum/addSpectrum Special
+
+/GsimDetectorManager/update
+/run/initialize
+#/run/beamOn 20

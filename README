@@ -1,0 +1,118 @@
+#
+# E14 library
+# Draft  : Tue Feb 20 22:10:39 JST 2007
+#
+# Hajime NANJO (nanjo@scphys.kyoto-u.ac.jp)
+# 
+
+1. Introduction
+
+  This library contains the software framework for the E14 experiment.
+
+2. Supported platform
+
+  o Linux on PC
+
+  o Mac on PC (Leopard and Snow Leopard)
+
+3. Requirements
+
+  o subversion
+          Many recent Linux distribution have subversion already.
+  o ROOT library
+  o Geant4 (>=8.3) with CLHEP library
+  o readline, history, and, curses libraray (standard for linux)
+        * For Mac
+          Builtin readline is not valid.
+          Re-install readline by yourself. (Install using Mac ports is fine.)
+  o GNU make (standard for linux)
+
+
+4. Installation on PC Linux
+
+   see INSTALL
+
+5. Package (Example package, novice01)
+
+	novice01
+	|-- Makefile        
+	|-- REQUIREMENTS    Necessary for the PACKAGE.
+	|-- novice01        For Header files.
+	|   `-- func.h
+	`-- src             For souce files.
+	    `-- fun.cc
+
+    1) REQUIREMENTS is necessary for each package.
+        In other words, if a directory contains REQUIREMENTS,
+           the directory is a package.
+        Inside REQUIREMENTS
+	  #config         ---> If an entry begin with #, it is indeed
+                                 a required package, but it is  not a library.
+	  MidasManager    ---> This is required libraray and will be linked.
+	  ......
+    2) PACKAGES
+         If PACKAGES is exist, make is done recursively for the packages
+           written in the PACKAGES.
+    3) ${E14_TOP_DIR}/e14/EXPORTED
+          If some packages in e14 is exported,
+              they are listed in ${E14_TOP_DIR}/e14/EXPORTED.
+          If e14 (top of all the packages) is exported,
+            ${E14_TOP_DIR}/e14/SUBDIRS is made and used instead.
+6. Makefiles
+  0) Target used in E14 libraray.
+install-headers:
+install-libs:
+install-bins:
+pre::
+distclean:
+clean::
+libs : 
+bins :
+  1) $E14_CONFIG_DIR/Makefile.e14
+                   # libs and bins are not defined, which should be written.
+                   # Others are applied recursively to PACKAGES.
+PACKAGE      =     # or package name, as PACKAGE = $(shell basename `pwd`)
+MAINS        =     # or exe name
+INSTALL_LIBS =     # or no
+INSTALL_BINS =     # or no
+include $(E14_CONFIG_DIR)/Makefile.e14
+libs:  ---> should define yourself
+bins:  ---> should define yourself
+
+
+  2) $E14_CONFIG_DIR/Makefile.bin
+                   # All targets are defined, which is standard
+                   #   for libraries without geant4.
+                   # libs and bins are defined in addition to Makefile.e14
+PACKAGE      =     # or package name, as PACKAGE = $(shell basename `pwd`)
+MAINS        =     # or exe names ---> multiple name can be written.
+                   # If MAINS=a b, then a.cc and b.cc with main()
+                   #      should be in package dir.
+INSTALL_LIBS =     # or no
+INSTALL_BINS =     # or no
+include $(E14_CONFIG_DIR)/Makefile.bin
+
+  3) $E14_CONFIG_DIR/Makefile.g4
+                   # All targets are defined,
+                   #         which support Geant4/CLHEP/ROOT.
+                   # libs and bins are defined in addition to Makefile.e14
+PACKAGE      =     # or package name, as PACKAGE = $(shell basename `pwd`)
+MAINS        =     # or exe name ---> single name is allowed.
+                   # If MAINS=a, then a.cc with main()
+                   #     should be in package dir. 
+INSTALL_LIBS =     # or no
+INSTALL_BINS =     # or no
+include $(E14_CONFIG_DIR)/Makefile.g4
+
+7. Web
+Inside KEK RSC,
+you can look through e14 library from
+http://chiaki.kek.jp/work/e14lib/svn/
+http://chiaki.kek.jp/~e14rs/WebSVN/
+
+8. Contact
+   
+   Questions, comments, suggestions or requests are welcome.
+   Please contact Hajime NANJO (nanjo@scphys.kyoto-u.ac.jp) .
+
+

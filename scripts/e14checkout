@@ -1,0 +1,183 @@
+#!/usr/bin/python
+# e14checkout [su]
+# checkout e14 from trunck
+# checkout e14 under dev dir.
+#   
+
+import os
+import sys
+import string
+import re
+import subprocess
+
+def e14init(TAG,REV):
+    # make top directories for export
+    if(not os.access(TAG,os.F_OK)):
+        comline="mkdir "
+        comline+=TAG
+        subprocess.Popen(comline,shell=True,
+                         stdout=subprocess.PIPE).communicate()[0]
+
+    fname=TAG
+    fname+="/release"
+    if(not os.access(fname,os.F_OK)):
+        fo = open(fname,"w")
+        fo.write(REV)
+        fo.close()
+
+    fin = open(fname,"r")
+    line = fin.readline()
+    fin.close()
+    if not line:
+        tmpo="No lines in "
+        tmpo+=fname
+        tmpo+="."
+        print tmpo
+        sys.exit(1)
+        
+    if(line[-1:]=="\n"): line=line[0:-1]
+    
+    if(line != REV):
+        tmpo="Rev. , "
+        tmpo+=line
+        tmpo+=", is different from "
+        tmpo+=REV
+        tmpo+="."
+        print tmpo
+        sys.exit(1)
+        
+    # make setup.sh
+    fname=TAG
+    fname+="/setup.sh"
+    if(not os.access(fname,os.F_OK)):
+        fo = open(fname,"w")
+        dir=os.getcwd()
+        dir+="/"
+        dir+=TAG
+        dir+="/e14"
+        tmpo="export E14_TOP_DIR="
+        tmpo+=dir
+        tmpo+="\n"
+        fo.write(tmpo)
+    
+        tmpo="source "
+        tmpo+=dir
+        tmpo+="/scripts/e14.sh\n"
+        fo.write(tmpo)
+        fo.close()
+
+    # make setup.csh
+    fname=TAG
+    fname+="/setup.csh"
+    if(not os.access(fname,os.F_OK)):
+        fo = open(fname,"w")
+        dir=os.getcwd()
+        dir+="/"
+        dir+=TAG
+        dir+="/e14"
+        tmpo="setenv E14_TOP_DIR "
+        tmpo+=dir
+        tmpo+="\n"
+        fo.write(tmpo)
+    
+        tmpo="source "
+        tmpo+=dir
+        tmpo+="/scripts/e14.csh\n"
+        fo.write(tmpo)
+        fo.close()
+        
+    #REPO
+    REPO="https://justice.hep.sci.osaka-u.ac.jp/svn/e14lib/"
+    REPO+=REV
+    REPO+="/"
+
+    comline='svn list '
+    comline+='--username '
+    comline+=userName
+    comline+=' '
+    comline+=REPO
+    print "svn repository check ..."
+    res = subprocess.Popen(comline,shell=True,
+                           stdout=subprocess.PIPE).communicate()[0]
+    res=res [0:-1]
+    
+    print "done"
+
+    if(res==''):
+        tmpo="Wrong repository, "
+        tmpo+=REPO
+        tmpo+="."
+        print tmpo
+        sys.exit(1)
+
+    return REPO
+
+def e14export(PKG,TAG,REV,REPO):
+    
+    PACKAGEPATH="e14"
+    
+    dir=TAG
+    dir+="/"
+    dir+=PACKAGEPATH
+
+    if(os.access(dir,os.F_OK)):
+        tmpo="Package, "
+        tmpo+=PKG
+        tmpo+=", is already checked out."
+        print tmpo
+        return
+        
+    mdir=dir[0:-len(PKG)]
+        
+    comline="cd "
+    comline+=mdir
+    comline+=" && "
+    comline+="svn checkout "
+    comline+='--username '
+    comline+=userName
+    comline+=' '
+    comline+=REPO
+    comline+="/"
+    comline+=PACKAGEPATH
+    print "svn checkout ..."
+    subprocess.Popen(comline,shell=True,
+                     stdout=subprocess.PIPE).communicate()[0]
+    print "done"
+
+    tmpo="Package, "
+    tmpo+=PKG
+    tmpo+=", is checked out."
+    print tmpo
+    return
+
+def e14usage():
+    print "e14checkout [userName]"
+    print "Description:"
+    print " The total e14 library is checked out from subversion trunk repository."
+    print " ./.*/setup.*sh is for the environment."
+
+#############################################
+# main
+#############################################
+nf = len(sys.argv)-1;
+if(not (nf == 0 or nf == 1)):
+    print "# of argument error."
+    sys.exit(1)
+    
+PKG="e14"
+TAG="dev"
+REV="trunk"
+
+userName="kotodev"
+if(nf==1):
+    if( sys.argv[1] == "-h" or sys.argv[1] == "--help"):
+        e14usage()
+        sys.exit(0)
+    else:
+        userName=sys.argv[1]
+    
+
+        
+REPO=e14init(TAG,REV)
+e14export(PKG,TAG,REV,REPO)
+

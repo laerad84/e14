@@ -1,0 +1,25 @@
+#########################################################
+# modify detector (shape can't be changed)
+#########################################################
+
+# 1) size can be modified.
+/GsimDetector/world/box/setParameters 5*cm 10*cm 5*cm
+/GsimDetectorManager/update
+/run/beamOn 1
+
+# 2) position can be modified.
+/GsimDetector/world/box/setTranslationVector 0*cm 2*cm 0*cm
+/GsimDetectorManager/update
+/run/beamOn 1
+
+# 3) rotation can be modified.
+/GsimDetector/world/box/setRotationVector 30*deg 30*deg 30*deg
+/GsimDetectorManager/update
+/run/beamOn 1
+
+
+###############
+/GsimDetector/world/box/setParameters 5*cm 5*cm 5*cm
+/GsimDetector/world/box/setTranslationVector 0*cm 0*cm 0*cm
+/GsimDetector/world/box/setRotationVector 0*deg 0*deg 0*deg
+/GsimDetectorManager/update

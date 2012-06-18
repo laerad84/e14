@@ -1,0 +1,56 @@
+#########################################################
+# virtual detector in the world
+#########################################################
+
+
+#construct physics at first (world also)
+/GsimPhysicsListFactory/QGSP_BERT/buildAndRegister
+
+#constrcut gun next
+/GsimPrimaryGeneratorActionFactory/GsimGeneralParticleSource/buildAndRegister gps
+#gun setup anywere after construction
+/gps/particle gamma
+/gps/energy 1 GeV
+/gps/direction 0 0 1
+/gps/position  0 0 -1 m
+
+#world setup(world is already constructed here)
+/GsimDetector/world/setParameters 5*m 5*m 50*m
+/GsimDetector/world/setOuterVisibility false
+
+#construct virtual detector 
+/GsimDetectorFactory/GsimDetector/buildAndRegister virt /world
+
+
+#construct detectors 
+# construct 3 GsimBox (box0,box1,box2) in the world/virt
+# assing the same sensitive detector, "det"
+
+/GsimDetectorFactory/GsimBox/buildAndRegister box0 /world/virt 0*cm 6*cm 0*cm 0*deg 0*deg 0*deg
+/GsimDetector/world/virt/box0/setParameters 5*cm 5*cm 5*cm
+/GsimDetector/world/virt/box0/setOuterMaterial G4_PbWO4
+/GsimDetector/world/virt/box0/setOuterColor blue
+/GsimDetector/world/virt/box0/setSensitiveDetectorWithName det 0
+
+/GsimDetectorFactory/GsimBox/buildAndRegister box1 /world/virt 0*cm 0*cm 0*cm 0*deg 0*deg 0*deg
+/GsimDetector/world/virt/box1/setParameters 5*cm 5*cm 5*cm
+/GsimDetector/world/virt/box1/setOuterMaterial G4_PbWO4
+/GsimDetector/world/virt/box1/setOuterColor blue
+/GsimDetector/world/virt/box1/setSensitiveDetectorWithName det 1
+
+/GsimDetectorFactory/GsimBox/buildAndRegister box2 /world/virt 0*cm -6*cm 0*cm 0*deg 0*deg 0*deg
+/GsimDetector/world/virt/box2/setParameters 5*cm 5*cm 5*cm
+/GsimDetector/world/virt/box2/setOuterMaterial G4_PbWO4
+/GsimDetector/world/virt/box2/setOuterColor blue
+/GsimDetector/world/virt/box2/setSensitiveDetectorWithName det 2
+
+# update all the modification
+/GsimDetectorManager/update
+
+# for visualization
+/GsimEventAction/setVisualizationMode 1
+/control/execute oglsini.mac
+
+# shoot 1 particle
+/run/initialize
+/run/beamOn 1
