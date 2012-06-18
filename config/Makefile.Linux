@@ -1,0 +1,48 @@
+# -*- Makefile -*-
+
+### for gcc-3.4.x or higher
+FC = f77
+CC = gcc
+CXX = g++
+AR  = ar
+LD_SHARED = g++
+CP = cp -a -L
+TEST = test
+PWD = /bin/pwd
+
+LIB_EXT:= so
+DEFS   +=  -DOS_LINUX -DCERNLIB_TYPE -DCERNLIB_LINUX -DCERNLIB_UNIX -DHEP_SHORT_NAMES #-Df2cFortran
+DEFS_F +=  -DOS_LINUX -DCERNLIB_TYPE -DCERNLIB_LINUX -DCERNLIB_UNIX -DHEP_SHORT_NAMES
+CPPFLAGS = 
+
+DEPCPPFLAGS = -MM 
+
+
+FOR32 = $(shell if file $$G4LIB/$$G4SYSTEM/libG4global.so  | grep -q 32;then echo -m32;fi)
+FFLAGS   += $(FOR32) -fno-second-underscore -fno-automatic -finit-local-zero -fno-emulate-complex -O3 -g -fPIC
+CFLAGS   += $(FOR32) -O3 -g -fPIC -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
+CXXFLAGS += $(FOR32) -O3 -g -fPIC -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
+SOFLAGS   = $(FOR32) -shared -Wl,-export-dynamic
+LDFLAGS  += $(FOR32)
+ARFLAGS   = rcsv
+
+SYSLIB = -lcrypt -lnsl -lm -lg2c
+
+X11LIB = -L/usr/X11R6/lib -lX11
+
+ifeq "$(shell [ -f $(HPSS_ROOT)/lib/libhpss.so ] && echo HPSS)" "HPSS"
+
+HPSSINC     = $(HPSS_ROOT)/include
+HPSSFLAGS   = -DLINUX -DHPSS51 -DLITTLEEND -D_BSD_SOURCE -D_THREAD_SAFE -D_LARGEFILE_SOURCE=1 -D_LARGEFILE64_SOURCE -D_POSIX_C_SOURCE=199309L -D_XOPEN_SOURCE
+HPSSLIB     = -L$(HPSS_ROOT)/lib -lhpss -L$(HPSS_ROOT)/tools/kek/lib -lhpssposix
+HPSSAUTHLIB = -L$(HPSS_ROOT)/lib -lhpsskrb5auth -lhpssunixauth
+
+### gufio : HPSS API
+GUFIOFLAGS = -DGUFIO 
+GUFIOLIB   = -lgufio
+
+endif
+
+LINUX_G77_BUG = -e 's/\.F\.o:/.o:/'
+
+

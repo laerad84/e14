@@ -1,0 +1,57 @@
+[Beam]
+E391
+	KL     : 3.3e5 KL    /2.5e12 pot
+	Halo n : 1.1e5 halo n/2.5e12 pot
+                 (out side of CC05 hole)
+E14(Report to E14 Review/Planning Committee)
+	KL     : 7.79e6 KL    /2e14 pot
+        Halo n : 0.72e4 halo n/2e14 pot
+                 (P>2GeV/c && R>8cm at CSI surface)
+
+KL measurement at Beam Suvery  by Shiomi (NIM paper and D-thesis)
+  Measuremnt with 7-cm Pb absorber 
+  Ni Target (5.4-cm-long): (1.94 +-0.05 +0.16-0.15)*1e7 KL/2e14 pot
+                           (MC G4:0.74e7, G3:1.51e7,FLUKA:2.07e7)
+  Pt Target (6.0-cm-long): (4.19 +00.09 +0.32-0.26)*1e7 KL/2e14 pot
+                           (MC G4:1.52e7, G3:2.38e7,FLUKA:3.24e7)
+
+
+
+[Data files]
+KEK CC (login.cc.kek.jp via sshcc1.kek.jp)
+/gpfs/fs03/had/koto/ps/klea/e14/data/
+/gpfs/fs03/had/koto/ps/klea/work/tetsu/beam-line/geant3/beam_seed/g3/
+/gpfs/fs03/had/koto/ps/klea/work/tetsu/beam-line/FLUKA/beam_seed/
+
+
+Sep.2010-
+beam01540.root : 1.660e9*190 P.O.T (Pt target, w/ 34x36mm2 70mm-t gamma absorber, w/ K1.1 (beam-hole of K1.1 magnet : 80x80mm2)) (T>0.001GeV) (nevt=6097394)
+
+
+beam01409.root
+  -. beamline TDR
+  -. 1.09e13 P.O.T equivalent
+  -. KL yield
+  -. halo-n definition
+------------------------------------------------------------------
+e14halon.root (Watanabe)
+  -. halo neutron from beamlien simulation
+  -. statistics 2931 halon/0.1 spill (2e14 pot * 0.1)
+  -. halo definition: R>8cm at z=CsI front surface
+  -. collimatorNo. #33
+     All materials are included between T1 and ollimator.
+     Spectrum correction is applied.
+  -. variables
+       hpgen(6) : px,py,pz,pp,total-E,kinetic-E 
+       hnpid:   : neutron pid
+       hvcc1(3) : postion at CC01 front surface [cm] (origin is T1)
+       hpcc1(6) : px,py,pz,pp,total-E,kinetic-E at CC01 front surface
+       rcsi     : r at 615.0 cm from CC01 front surface
+       xcsi,ycsi: x,y  at 615.0 cm from CC01 front surface
+------------------------------------------------------------------
+e391coren.root (Sumida)
+e391corenover1GeV.root (Pn>1GeV sample)  (Sumida)
+------------------------------------------------------------------
+e391halon.root (Sumida)
+  -. statistics 436.25 halon/1e10 pot
+------------------------------------------------------------------

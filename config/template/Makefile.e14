@@ -1,0 +1,24 @@
+PACKAGE      =     # or package name, as PACKAGE = $(shell basename `pwd`)
+MAINS        =     # or exe name
+INSTALL_LIBS =     # or no
+INSTALL_BINS =     # or no
+
+EXTRALIBS   +=     # for extra libs 
+
+include $(E14_CONFIG_DIR)/Makefile.e14
+
+libs: 
+ifneq "$(SUBDIRS)" ""
+	@ for dirs in $(SUBDIRS); do \
+	echo making $@ in $$dirs; \
+	$(MAKE) -C $$dirs $@ || exit 1; \
+	done
+endif
+
+bins: 
+ifneq "$(SUBDIRS)" ""
+	@ for dirs in $(SUBDIRS); do \
+	echo installing $@ in $$dirs; \
+	$(MAKE) -C $$dirs $@ || exit 1; \
+	done
+endif

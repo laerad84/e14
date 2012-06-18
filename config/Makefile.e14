@@ -1,0 +1,321 @@
+# -*- Makefile -*-
+
+# $Id$
+# $Log$
+
+#
+# Define E14 common
+#	default:
+#	install-headers:
+#	install-libs:
+#	install-bins:
+#	dist-clean:
+#	clean::
+#	rootdicts:
+#       my:
+#       install-headers-my
+#       install-libs-my
+#       install-bins-my
+# Recursive make for SUBDIRS is treated.
+# Double colon rule for clean
+#   for compatibility with geant4.
+#
+
+### gmake
+MAKE = make
+ifeq "$(shell if which gmake >/dev/null;then echo gmake;fi)" "gmake"
+MAKE = gmake
+endif
+
+MAKEFLAGS += --no-print-directory
+ifneq "$(MAKE_CPUS)" ""
+MAKEFLAGS += -j $(MAKE_CPUS)
+endif
+
+### OS specifics
+include $(E14_CONFIG_DIR)/Makefile.$(shell uname)
+
+SUBDIRS += $(shell grep -v "\#" PACKAGES 2>/dev/null)
+
+ifneq "$(MY_TOP_DIR)" ""
+CFLAGS  += -I$(MY_TOP_DIR)/include
+CXXFLAGS  += -I$(MY_TOP_DIR)/include
+CPPFLAGS  += -I$(MY_TOP_DIR)/include
+EXTRALIBS += -L$(MY_TOP_DIR)/lib
+endif
+
+CFLAGS  += -I. -I$(E14_TOP_DIR)/include
+CXXFLAGS  += -I. -I$(E14_TOP_DIR)/include
+CPPFLAGS  += -I. -I$(E14_TOP_DIR)/include
+EXTRALIBS += -L$(E14_TOP_DIR)/lib/so
+
+ifdef ROOTSYS
+CXXFLAGS  += $(shell root-config --cflags)
+CPPFLAGS  += $(shell root-config --cflags)
+EXTRALIBS += $(shell root-config --libs) -lEG
+endif
+
+# ifdef GSL
+# CXXFLAGS  += $(shell gsl-config --cflags)
+# CPPFLAGS  += $(shell gsl-config --cflags)
+# EXTRALIBS += $(shell gsl-config --libs)
+# endif
+
+ifdef HPSSINC
+CFLAGS    += $(GUFIOFLAGS) -I$(HPSSINC)
+CXXFLAGS  += $(GUFIOFLAGS) -I$(HPSSINC)
+CPPFLAGS  += $(GUFIOFLAGS) -I$(HPSSINC)
+EXTRALIBS += $(HPSSLIB)
+endif
+
+ifdef E14DEBUG
+CFLAGS   += -DE14DEBUG
+CXXFLAGS += -DE14DEBUG
+CPPFLAGS += -DE14DEBUG
+endif
+
+ifneq "$(MAINS)" ""
+ifneq "$(shell ls REQUIREMENTS 2>/dev/null)" ""
+REQUIREMENTS = $(shell grep -v "\#" REQUIREMENTS)
+ifneq "$(REQUIREMENTS)" ""
+	RLIBS = $(foreach elem,$(REQUIREMENTS),-l$(notdir $(elem)))
+	EXTRALIBS +=$(RLIBS)
+endif
+endif
+endif
+
+default: libs install-libs bins install-bins
+
+
+##########################################
+pre::
+
+##########################################
+install-headers: pre
+ifneq "$(SUBDIRS)" ""
+	@ for dirs in $(SUBDIRS); do \
+	echo making $@ in $$dirs; \
+	$(MAKE) -C $$dirs $@ || exit 1;\
+	done
+endif
+ifneq "$(PACKAGE)" ""
+ifneq "$(shell [ -d $(PACKAGE) ] && echo $(PACKAGE))" ""
+	@ echo installing headers for $(PACKAGE)
+	@ [ -d $(E14_TOP_DIR)/include/$(PACKAGE) ] || \
+	  mkdir -p $(E14_TOP_DIR)/include/$(PACKAGE)
+ifneq "$(wildcard $(PACKAGE)/*.h $(PACKAGE)/*.hh $(PACKAGE)/*.icc $(PACKAGE)/*.inc)" ""
+	@ for file in $(wildcard $(PACKAGE)/*.h $(PACKAGE)/*.hh $(PACKAGE)/*.icc $(PACKAGE)/*.inc); do \
+	  ln -f -s $(shell pwd)/$$file $(E14_TOP_DIR)/include/$(PACKAGE)/.; \
+	  done
+endif
+ifneq "$(wildcard $(PACKAGE)/*.db $(PACKAGE)/*.dat) $(PACKAGE)/*.root)" ""
+	@ echo installing data for $(PACKAGE)
+	@ for file in $(wildcard $(PACKAGE)/*.db $(PACKAGE)/*.dat $(PACKAGE)/*.root); do \
+	  [ -d $(E14_TOP_DIR)/share/$(PACKAGE) ] || \
+	  mkdir -p $(E14_TOP_DIR)/share/$(PACKAGE); \
+	  ln -f -s $(shell pwd)/$$file $(E14_TOP_DIR)/share/$(PACKAGE)/.; \
+	  done
+endif
+endif
+endif
+
+##########################################
+install-libs:
+	@ [ -d $(E14_TOP_DIR)/lib/so ] || \
+	  mkdir -p $(E14_TOP_DIR)/lib/so
+ifneq "$(SUBDIRS)" ""
+	@ for dirs in $(SUBDIRS); do \
+	echo making $@ in $$dirs; \
+	$(MAKE) -C $$dirs $@ || exit 1; \
+	done
+endif
+ifneq "$(PACKAGE)" ""
+ifneq "$(INSTALL_LIBS)" "no"
+	@ echo installing libs for $(PACKAGE)
+	@ [ -d ./lib ] &&\
+	cd ./lib/ && \
+	for file in `ls *.a 2>/dev/null`; do \
+	$(CP) $$file $(E14_TOP_DIR)/lib/.; \
+	done || true
+	@ [ -d ./lib/so ] &&\
+	cd ./lib/so && \
+	for file in `ls *.$(LIB_EXT) 2>/dev/null`; do \
+	$(CP) $$file $(E14_TOP_DIR)/lib/so/.; \
+	done || true
+endif
+endif
+
+##########################################
+install-bins:
+	@ [ -d $(E14_TOP_DIR)/bin ] || \
+	  mkdir -p $(E14_TOP_DIR)/bin
+ifneq "$(SUBDIRS)" ""
+	@ for dirs in $(SUBDIRS); do \
+	echo making $@ in $$dirs; \
+	$(MAKE) -C $$dirs $@ || exit 1; \
+	done
+endif
+ifneq "$(PACKAGE)" ""
+ifneq "$(INSTALL_BINS)" "no"
+	@ echo installing bins for $(PACKAGE)
+	@ [ -d ./bin ] &&\
+	cd ./bin && \
+	for file in `ls 2>/dev/null`; do \
+	$(CP) $$file $(E14_TOP_DIR)/bin/. 2>/dev/null; \
+	done || true
+endif
+endif
+
+
+
+##########################################
+distclean: clean
+	@ rm -f *~ fort.* last.kumac* paw.metafile
+ifneq "$(SUBDIRS)" ""
+	@ for dirs in $(SUBDIRS); do \
+	if [ -d $$dirs ]; then \
+	echo making $@ in $$dirs; \
+	$(MAKE) -C $$dirs $@ || exit 1;fi \
+	done
+endif
+ifneq "$(PACKAGE)" ""
+	@ rm -f ./*~ 
+	@ [ -d ./$(PACKAGE) ] && rm -f ./$(PACKAGE)/*~ || true
+	@ [ -d ./include ] && rm -f ./include/*~ || true
+	@ [ -d ./src ] && rm -f ./src/*~ || true
+	@ [ -d ./bin/$(G4SYSTEM) ] && rmdir ./bin/$(G4SYSTEM) || true
+	@ [ -d ./bin ]     && rmdir ./bin        || true
+	@ [ -d ./lib/so ]  && rmdir ./lib/so     || true
+	@ [ -d ./lib ]     && rmdir ./lib        || true
+	@ [ -d ./tmp ]     && rm -r ./tmp        || true
+endif
+
+##########################################
+clean::
+ifneq "$(SUBDIRS)" ""
+	@ for dirs in $(SUBDIRS); do \
+	if [ -d $$dirs ]; then \
+	echo making $@ in $$dirs; \
+	$(MAKE) -C $$dirs $@ || exit 1;fi \
+	done
+endif
+ifneq "$(PACKAGE)" ""
+ifneq "$(shell ls ./$(PACKAGE)/*LinkDef.h 2>/dev/null)" ""
+	@ echo clean rootdicts
+	@ for  i in `ls ./$(PACKAGE)/*LinkDef.h | sed -n "s/\(.*\)LinkDef.h/\1.h/p"`;do \
+	j=`basename $$i .h`; \
+	rm -f src/$${j}Dict.cc src/$${j}Dict.h; \
+	done;
+endif
+endif
+
+##########################################
+rootdicts: 
+ifneq "$(PACKAGE)" ""
+ifneq "$(shell ls ./$(PACKAGE)/*LinkDef.h 2>/dev/null)" ""
+	@ echo making rootdicts 
+	@ for  i in `ls ./$(PACKAGE)/*LinkDef.h | sed -n "s/\(.*\)LinkDef.h/\1.h/p"`;do \
+	j=`basename $$i .h`; \
+	rootcint -f src/$${j}Dict.cc -c ./$(PACKAGE)/$${j}.h ./$(PACKAGE)/$${j}LinkDef.h; \
+	done;
+endif
+endif
+
+##########################################
+my: libs install-libs-my bins install-bins-my
+
+##########################################
+##########################################
+install-headers-my: pre
+ifeq "$(MY_TOP_DIR)" ""
+	@echo "Please set environment variable, MY_TOP_DIR."; \
+	echo "add MY_TOP_DIR/bin to PATH"; \
+	echo "add MY_TOP_DIR/lib to LD_LIBRARY_PATH"
+else
+ifneq "$(SUBDIRS)" ""
+	@ for dirs in $(SUBDIRS); do \
+	echo making $@ in $$dirs; \
+	$(MAKE) -C $$dirs $@ || exit 1;\
+	done
+endif
+ifneq "$(PACKAGE)" ""
+ifneq "$(shell [ -d $(PACKAGE) ] && echo $(PACKAGE))" ""
+	@ echo installing headers for $(PACKAGE)
+	@ [ -d $(MY_TOP_DIR)/include/$(PACKAGE) ] || \
+	  mkdir -p $(MY_TOP_DIR)/include/$(PACKAGE)
+ifneq "$(wildcard $(PACKAGE)/*.h $(PACKAGE)/*.hh $(PACKAGE)/*.icc $(PACKAGE)/*.inc)" ""
+	@ for file in $(wildcard $(PACKAGE)/*.h $(PACKAGE)/*.hh $(PACKAGE)/*.icc $(PACKAGE)/*.inc); do \
+	  ln -f -s $(shell pwd)/$$file $(MY_TOP_DIR)/include/$(PACKAGE)/.; \
+	  done
+endif
+ifneq "$(wildcard $(PACKAGE)/*.db $(PACKAGE)/*.dat)" ""
+	@ echo installing data for $(PACKAGE)
+	@ for file in $(wildcard $(PACKAGE)/*.db $(PACKAGE)/*.dat); do \
+	  [ -d $(MY_TOP_DIR)/share/$(PACKAGE) ] || \
+	  mkdir -p $(MY_TOP_DIR)/share/$(PACKAGE); \
+	  ln -f -s $(shell pwd)/$$file $(MY_TOP_DIR)/share/$(PACKAGE)/.; \
+	  done
+endif
+endif
+endif
+endif
+
+
+##########################################
+install-libs-my:
+ifeq "$(MY_TOP_DIR)" ""
+	@echo "Please set environment variable, MY_TOP_DIR."; \
+	echo "add MY_TOP_DIR/bin to PATH"; \
+	echo "add MY_TOP_DIR/lib to LD_LIBRARY_PATH"
+else
+	@ [ -d $(MY_TOP_DIR)/lib ] || \
+	  mkdir -p $(MY_TOP_DIR)/lib
+ifneq "$(SUBDIRS)" ""
+	@ for dirs in $(SUBDIRS); do \
+	echo making $@ in $$dirs; \
+	$(MAKE) -C $$dirs $@ || exit 1; \
+	done
+endif
+ifneq "$(PACKAGE)" ""
+ifneq "$(INSTALL_LIBS)" "no"
+	@ echo installing libs for $(PACKAGE)
+	@ [ -d ./lib ] &&\
+	cd ./lib/ && \
+	for file in `ls *.a 2>/dev/null`; do \
+	$(CP) $$file $(MY_TOP_DIR)/lib/.; \
+	done || true
+	@ [ -d ./lib/so ] &&\
+	cd ./lib/so && \
+	for file in `ls *.$(LIB_EXT) 2>/dev/null`; do \
+	$(CP) $$file $(MY_TOP_DIR)/lib/.; \
+	done || true
+endif
+endif
+endif
+
+##########################################
+install-bins-my:
+ifeq "$(MY_TOP_DIR)" ""
+	@echo "Please set environment variable, MY_TOP_DIR."; \
+	echo "add MY_TOP_DIR/bin to PATH"; \
+	echo "add MY_TOP_DIR/lib to LD_LIBRARY_PATH"
+else
+	@ [ -d $(MY_TOP_DIR)/bin ] || \
+	  mkdir -p $(MY_TOP_DIR)/bin
+ifneq "$(SUBDIRS)" ""
+	@ for dirs in $(SUBDIRS); do \
+	echo making $@ in $$dirs; \
+	$(MAKE) -C $$dirs $@ || exit 1; \
+	done
+endif
+ifneq "$(PACKAGE)" ""
+ifneq "$(INSTALL_BINS)" "no"
+	@ echo installing bins for $(PACKAGE)
+	@ [ -d ./bin ] &&\
+	cd ./bin && \
+	for file in `ls 2>/dev/null`; do \
+	$(CP) $$file $(MY_TOP_DIR)/bin/. 2>/dev/null; \
+	done || true
+endif
+endif
+endif

@@ -1,0 +1,77 @@
+===========gsim4 tutorial===========
+
+1) tutorial01-0 : construct detector
+   tutorial01-1 : manipulate gun
+   tutorial01-2 : manipulate volume
+   tutorial01-3 : set sensitivity
+
+$E14_TOP_DIR/examples/gsim4test/bin/gsim4test
+Gsim(PreInit)[/] /control/execute tutorial01-0.mac
+Gsim(Idle)[/] /control/execute tutorial01-1.mac
+Gsim(Idle)[/] /control/execute tutorial01-2.mac
+Gsim(Idle)[/] /control/execute tutorial01-3.mac
+Gsim(Idle)[/] exit
+
+
+2) tutorial02-0 : construct virtual detector and 3 boxes under the virutal
+   tutorial02-1 : manipulate virtual detector
+
+$E14_TOP_DIR/examples/gsim4test/bin/gsim4test
+Gsim(PreInit)[/] /control/execute tutorial02-0.mac
+Gsim(Idle)[/] /control/execute tutorial02-1.mac
+Gsim(Idle)[/] exit
+
+3) tutorial03 : clone
+
+$E14_TOP_DIR/examples/gsim4test/bin/gsim4test
+Gsim(PreInit)[/] /control/execute tutorial03.mac
+Gsim(PreInit)[/] exit
+
+4) tutorial04 : mylib, myapp
+Such virtual detector containing 3 boxes is converted to a new detector class.
+(GsimVirt in mylib)
+Please refer
+$E14_TOP_DIR/sources/sim/gsim4/GsimUserDetector/GsimUserDetector/GsimScratch.h
+$E14_TOP_DIR/sources/sim/gsim4/GsimUserDetector/src/GsimScratch.cc
+
+As for myapp.cc, just 2 lines are added to gsim4test.cc.
+   #include "mylib/GsimVirt.h"
+   new GsimDetectorFactory<GsimVirt>(dm,"GsimVirt");
+   mylib should be added to REQUIREMENTS .
+
+cd mylib
+make install-headers
+make
+cd ..
+cd myapp
+make install-headers
+make
+cd ..
+./myapp/bin/myapp 
+Gsim(PreInit)[/] /control/execute tutorial04.mac
+Gsim(PreInit)[/] exit
+
+5) tutorial05 : non-interactive job and analysis
+source tutorial05.sh
+cd ana0
+root
+root [0] .x tutorial05.C
+root [1] .q
+cd ..
+cd ana1
+make
+source run.sh
+cd ..
+
+6) tutorial06 : fastSimulation
+./myapp/bin/myapp 
+Gsim(PreInit)[/] /control/execute tutorial06.mac
+Gsim(PreInit)[/] exit
+
+7) tutorial07 : fastSimulation with non-interactive job
+source tutorial07.sh
+cd ana0
+root
+root [0] .x tutorial07.C
+root [1] .q
+cd ..

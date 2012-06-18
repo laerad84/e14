@@ -1,0 +1,42 @@
+# -*- Makefile -*-
+
+SNOW=no
+ifeq "$(shell sw_vers | grep ProductVersion | awk -F . '{print $2}')" "6"
+	SNOW = yes
+endif
+
+### for gcc-3.4.x or higher
+FC = f77
+CC = gcc
+CXX = g++
+AR  = ar
+LD_SHARED = g++
+CP = cp -a -L
+ifeq "$(SNOW)" "no"
+	CP = cp -R -L
+endif
+TEST = test
+PWD = /bin/pwd
+
+LIB_EXT:= dylib
+DEFS   +=  -DOS_DARWIN -DCERNLIB_TYPE -DCERNLIB_LINUX -DCERNLIB_UNIX -DHEP_SHORT_NAMES #-Df2cFortran
+DEFS_F +=  -DOS_DARWIN -DCERNLIB_TYPE -DCERNLIB_LINUX -DCERNLIB_UNIX -DHEP_SHORT_NAMES
+CPPFLAGS = 
+
+DEPCPPFLAGS = -MM
+#FOR32 = -m32
+FOR32 = 
+FFLAGS   += $(FOR32) -fno-second-underscore -fno-automatic -finit-local-zero -fno-emulate-complex -O3 -g -fPIC
+CFLAGS   += $(FOR32) -O3 -g -fPIC -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
+CXXFLAGS += $(FOR32) -O3 -g -fPIC -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
+SOFLAGS   = $(FOR32) -single_module -undefined dynamic_lookup -dynamiclib
+LDFLAGS  += $(FOR32)
+ARFLAGS   = rcsv
+
+SYSLIB = -lcrypt -lnsl -lm -lg2c
+
+X11LIB = -L/usr/X11R6/lib -lX11
+
+LINUX_G77_BUG = -e 's/\.F\.o:/.o:/'
+
+

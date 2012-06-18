@@ -1,0 +1,15 @@
+GsimData
+GsimPersistency
+GsimTools
+GsimUIbash
+GsimPhysicsList
+GsimParticle
+GsimKernel
+GsimMaterial
+GsimGun
+GsimE391Spectrum
+GsimE14Spectrum
+GsimDetector
+GsimUserDetector
+GsimE391Detector
+GsimE14Detector

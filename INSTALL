@@ -1,0 +1,26 @@
+Installation
+
+    0) Check SVN, ROOT, CLHEP, Geant4 (see ENVIRONMENT)
+    1) cd to some directory
+        $ cd ~/a/b/c
+       ~/a/b/c is a directory you like.
+    2) Download scripts from
+        https://202.13.210.87/svn/e14lib/trunk/e14/scripts/e14export
+    3) Execute e14export.
+	$ ./e14export
+       Here you can choose one sub-package instead.
+	$ /e14/scripts/e14export novice01
+       All required packages are automatically exported.
+    3) Set environments
+	$ cd pro
+	$ source setup.sh
+          This setup.sh can be run from .bashrc.
+          If you moved or renamed the pro directory, edit setup.sh. 
+    4) Make
+	$ cd e14
+	$ make install-headers
+       Please ignore some messages at this stage.
+	$ make
+
+
+

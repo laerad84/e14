@@ -1,0 +1,123 @@
+# -*- Makefile -*-
+
+# Makefile.bin
+#
+# $Id$
+# $Log$
+
+#
+# Define
+#	libs:
+#	bins:
+#
+
+include $(E14_CONFIG_DIR)/Makefile.e14
+
+### CLHEP
+ifdef CLHEP_BASE_DIR
+CXXFLAGS  += $(shell clhep-config --include)
+CPPFLAGS  += $(shell clhep-config --include)
+EXTRALIBS += $(shell clhep-config --libs)
+endif
+
+### Dependence description
+C_SOURCES   = $(wildcard src/*.c)
+CXX_SOURCES = $(wildcard src/*.cc)
+LIB_SOURCES = $(CXX_SOURCES) $(C_SOURCES)
+C_OBJLIST   = $(notdir $(C_SOURCES))
+CXX_OBJLIST = $(notdir $(CXX_SOURCES))
+LIB_OBJECTS = $(CXX_OBJLIST:%.cc=tmp/%.o) $(C_OBJLIST:%.c=tmp/%.o)
+
+MAIN_SOURCES = $(MAINS:%=%.cc)
+MAIN_OBJECTS = $(MAINS:%=tmp/%.o)
+
+OBJECTS  = $(LIB_OBJECTS) $(MAIN_OBJECTS)
+
+ALL_EXECS   = $(MAINS:%=./bin/%)
+ALL_LIBS_SO = $(PACKAGE:%=./lib/so/lib%.$(LIB_EXT))
+
+
+libs: rootdicts mklibdir $(ALL_LIBS_SO)
+ifneq "$(SUBDIRS)" ""
+	@ for dirs in $(SUBDIRS); do \
+	echo making $@ in $$dirs; \
+	$(MAKE) -C $$dirs $@ || exit 1; \
+	done
+endif
+
+bins: mkbindir $(ALL_EXECS)
+ifneq "$(SUBDIRS)" ""
+	@ for dirs in $(SUBDIRS); do \
+	echo installing $@ in $$dirs; \
+	$(MAKE) -C $$dirs $@ || exit 1; \
+	done
+endif
+
+mklibdir: 
+ifneq "$(PACKAGE)" ""
+	@ [ -d ./tmp ]    || mkdir -p ./tmp
+	@ [ -d ./lib ]    || mkdir -p ./lib
+	@ [ -d ./lib/so ] || mkdir -p ./lib/so
+endif
+
+mkbindir: 
+ifneq "$(MAINS)" ""
+	@ [ -d ./tmp ] || mkdir -p ./tmp
+	@ [ -d ./bin ] || mkdir -p ./bin
+endif
+
+clean::
+	@ rm -f tmp/*.d tmp/*.o
+	@ rm -f $(ALL_LIBS_SO) $(ALL_EXECS)
+
+ifneq "$(OBJECTS:%.o=%.d)" ""
+-include $(OBJECTS:%.o=%.d)
+endif
+
+
+### Processing
+COMPILE_CC  := $(CC)  -c  $(DEFS) $(INCLUDES_C:%=-I%) $(CFLAGS)
+COMPILE_CXX := $(CXX) -c  $(DEFS) $(INCLUDES_C:%=-I%) $(CXXFLAGS)
+LINK_CC  := $(CC)
+LINK_CXX := $(CXX)
+DEPEND_CC  := gcc -MM $(DEFS) $(INCLUDES_C:%=-I%) $(CPPFLAGS) $(filter-out -fPIC,$(CFLAGS))
+DEPEND_CXX := gcc -MM $(DEFS) $(INCLUDES_C:%=-I%) $(CPPFLAGS) $(filter-out -fPIC,$(CXXFLAGS))
+
+tmp/%.o: src/%.c
+	@ [ -d ./tmp ] || mkdir -p ./tmp
+	@ echo making $(@F)
+	@ $(COMPILE_CC) -o $@ $< 
+
+tmp/%.d: src/%.c
+	@ [ -d ./tmp ] || mkdir -p ./tmp
+	@ echo making dependencies of $(<F)
+	@ $(SHELL) -ec '$(DEPEND_CC) $< | sed -e "s/$*\.o[ :]*/tmp\/$(@F) tmp\/&/g" > $@'
+
+tmp/%.o: src/%.cc
+	@ [ -d ./tmp ] || mkdir -p ./tmp
+	@ echo making $(@F)
+	@ $(COMPILE_CXX) -o $@ $<
+
+tmp/%.d: src/%.cc
+	@ [ -d ./tmp ] || mkdir -p ./tmp
+	@ echo making dependencies of $(<F)
+	@ $(SHELL) -ec '$(DEPEND_CXX) $< | sed -e "s/$*\.o[ :]*/tmp\/$(@F) tmp\/&/g" > $@'
+
+tmp/%.o: %.cc
+	@ [ -d ./tmp ] || mkdir -p ./tmp
+	@ echo making $(@F)
+	@ $(COMPILE_CXX) -o $@ $<
+
+tmp/%.d: %.cc
+	@ [ -d ./tmp ] || mkdir -p ./tmp
+	@ echo making dependencies of $(<F)
+	@ $(SHELL) -ec '$(DEPEND_CXX) $< | sed -e "s/$*\.o[ :]*/tmp\/$(@F) tmp\/&/g" > $@'
+
+$(ALL_LIBS_SO): $(LIB_OBJECTS)
+	@ echo linking $(@F)
+	@ $(LD_SHARED) $(SOFLAGS) -o $@ $(LIB_OBJECTS)
+
+$(ALL_EXECS): $(OBJECTS)
+	@ echo linking $(@F)
+	@ $(LINK_CXX) $(LDFLAGS) -o $@ tmp/$(@F).o $(LIB_OBJECTS) $(EXTRALIBS)
+
