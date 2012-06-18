@@ -1,0 +1,331 @@
+\documentclass[a4paper,12pt]{article}
+\input{package}
+
+%\setlength{\topmargin}{-5pt}
+%\setlength{\oddsidemargin}{0cm}
+%\setlength{\evensidemargin}{0cm}
+%\setlength{\textwidth}{16cm}
+%\setlength{\textheight}{24cm}
+\setlength{\belowcaptionskip}{5pt}
+\setcounter{tocdepth}{6}
+
+\pagestyle{fancy}
+\fancyhf{}
+%\fancyhead[er]{\fancyplain{}{\sl\bf\leftmark}}
+%\fancyhead[ol]{\fancyplain{}{\sl\bf\rightmark}}
+\fancyhead[er]{{\sl\bf\leftmark}}
+\fancyhead[ol]{{\sl\bf\rightmark}}
+\fancyhead[el,or]{\rm\bf\thepage}
+\fancypagestyle{plain} {
+\fancyhead[er,ol]{}
+\fancyhead[el,or]{\rm\bf\thepage}}
+\renewcommand{\headrulewidth}{0.5pt}
+
+
+\newenvironment{widelineskip}{\addtolength{\baselineskip}{24pt}}{\relax}
+\begin{document}
+\title{E14 Manual}
+\author{Hajime Nanjo}
+\maketitle
+
+ \section{Introduction}
+  This library contains the software framework for the E14 experiment.
+ \section{Supported platform}
+  Linux on PC / Mac\\
+  For Mac, DYLD\_LIBRARY\_PATH should be set as same as LD\_LIBRARY\_PATH.
+  Re-install readline library. Other procedure is the same.
+ \section{Requirements}
+  \begin{itemize}
+   \item subversion\\
+         Many recent Linux distribution have subversion already.
+   \item ROOT library ($\ge 5.14$)
+	 \begin{itemize}
+	  \item  CERN lib (optional)
+	 \end{itemize}
+   \item Geant4 ($\ge 8.3$)
+	 \begin{itemize}
+	  \item CLHEP corresponding to the Geant4
+	 \end{itemize}
+   \item readline, history, and, curses libraray\\
+          (standard for linux. for mac, re-install readline library.) 
+   \item GNU make (standard for linux) 
+  \end{itemize}
+
+ \section{Installation on PC Linux}
+  \subsection{At KEK RSC}
+  \begin{enumerate}
+   \item Login RSC and setup for subversion\\
+	 For bash user, add lines below to .bashrc.
+	 \begin{verbatim}
+	SVN=/e14/local/subversion/1.1.4
+	# if KEK CC, SVN=/nfs/g/ps/klea/e14/local/subversion/1.1.4
+	export LD_LIBRARY_PATH=${SVN}/lib:${LD_LIBRARY_PATH}
+	export PATH=${SVN}/bin:${PATH}
+	export MANPATH=${SVN}/man:${MANPATH}	
+	 \end{verbatim}
+   \item Setup ROOT/Geant4/CLHEP
+	 \begin{verbatim}
+        export ROOTSYS=xxx
+        export PATH=${ROOTSYS}/bin:$PATH
+        export LD_LIBRARY_PATH=${ROOTSYS}/lib:${LD_LIBRARY_PATH}
+        export G4INSTALL=yyy
+	source $G4INSTALL/env.sh
+	export PATH=${CLHEP_BASE_DIR}/bin:$PATH
+	 \end{verbatim}
+   \item cd to some directory
+	 \begin{verbatim}
+	cd ~/a/b/c	
+	 \end{verbatim}
+	 \~/a/b/c is a directroy you like.
+   \item Execute e14export.
+	 \begin{verbatim}
+	/e14/scripts/e14export e14
+	 \end{verbatim}
+	 Here you can choose one sub-package instead.
+	 \begin{verbatim}
+	/e14/scripts/e14export novice01
+	 \end{verbatim}
+	 All required packages are automatically exported.
+   \item Set environments\\
+	 For bash user
+	 \begin{verbatim}
+	cd pro
+	source setup.sh	
+	 \end{verbatim}
+	 This setup.sh is automatically generated and can be used from
+	 .bashrc.
+   \item Make
+	 \begin{verbatim}
+	cd e14
+	make install-headers
+	 \end{verbatim}
+	 Please ignore some messages at this stage.
+	 \begin{verbatim}
+	make
+	 \end{verbatim}
+  \end{enumerate}
+  \subsection{KEK CC}
+  \begin{enumerate}
+   \item Setup ROOT/Geant4/CLHEP
+	 At KEK CC, each version of ROOT is installed under
+	 /software/ROOT/,
+	 each version of Geant4 is installed under /software/Geant4/,
+	 each version of CLHEP is installed under /software/CLHEP/.
+	 \begin{verbatim}
+        export ROOTSYS=xxx
+        export PATH=${ROOTSYS}/bin:$PATH
+        export LD_LIBRARY_PATH=${ROOTSYS}/lib:${LD_LIBRARY_PATH}
+        export G4INSTALL=yyy
+	export G4SYSTEM=zzz
+	export G4LIB=xyz 
+	# ${G4INSTALL}/lib as usual, but ${G4INSTALL}/slib at KEK CC
+	export G4LIB_BUILD_SHARED=1
+	export LD_LIBRARY_PATH=${G4LIB}/${G4SYSTEM}:${LD_LIBRARY_PATH}
+	export G4LEVELGAMMADATA=$G4INSTALL/../data/....
+	# also for other G4 data
+	export CLHEP_BASE_DIR=zxy
+	export PATH=${CLHEP_BASE_DIR}/bin:$PATH
+	export LD_LIBRARY_PATH=${CLHEP_BASE_DIR}/lib:${LD_LIBRARY_PATH}
+	 \end{verbatim}
+   \item cd to some directory
+	 \begin{verbatim}
+	cd ~/a/b/c	
+	 \end{verbatim}
+	 \~/a/b/c is a directroy you like.
+   \item Copy the source of E14 library
+	 Get the source of E14 library with e14export in KEK RSC or other
+	 hosts outside KEK.
+	 Copy the source to KEK CC with scp.
+	 Edit setup.sh. 
+	 The same procedure as ``Set environments'' and the following as in
+	 KEK RSC. 
+  \end{enumerate}
+  \subsection{Outside KEK}
+  \begin{enumerate}
+   \item Please check svn can be used at your local host.\\
+	 \begin{verbatim}
+	svn help
+	\end{verbatim}	
+   \item (optional) Once login RSC and setup for subversion\\
+	 This is needed only for developers.\\
+	 For bash user, 
+           add lines below to .bashrc.
+	 \begin{verbatim}
+	SVN=/e14/local/subversion/1.1.4
+	export LD_LIBRARY_PATH=${SVN}/lib:${LD_LIBRARY_PATH}
+	export PATH=${SVN}/bin:${PATH}
+	export MANPATH=${SVN}/man:${MANPATH}	
+	 \end{verbatim}
+   \item Once login RSC and copy scripts to your local host.
+	 \begin{verbatim}
+	scp -r /e14/scripts xxx.yyy.zzz:~/a/b/c/
+	exit #logout
+	 \end{verbatim}
+   \item Set variables at your local host\\
+	 For bash user,
+	 \begin{verbatim}
+	export E14_GATE_USER=[your account on kl-gate]
+	export E14_SERVER_USER=[your account on RSC]
+	export E14_SVNHTTP_TUNNEL_PORT=61088
+	export E14_SVNSSH_TUNNEL_PORT=61022
+	export SVN_SSH="ssh -l ${E14_SERVER_USER} -oHostName=localhost -oHostKeyAlias=chiaki.kek.jp -oPort=${E14_SVNSSH_TUNNEL_PORT}"
+	 \end{verbatim}
+	 The SVN\_SSH is "ssh -l \$\{E14\_SERVER\_USER\}
+	 -oHostName=localhost -oHostKeyAlias=chiaki.kek.jp
+	 -oPort=\$\{E14\_SVNSSH\_TUNNEL\_PORT\}"\\
+   \item Execute e14connection at your host.
+	 \begin{verbatim}
+	cd ~/a/b/c/
+	./scripts/e14connection start
+	 \end{verbatim}
+	 Type password for ssh tunnel.
+   \item Execute e14export
+	 \begin{verbatim}
+	./scripts/e14export e14
+	 \end{verbatim}
+	 Here you can choose one sub-package instead.
+	 \begin{verbatim}
+	./scripts/e14export novice01
+	 \end{verbatim}
+	 All required packages are automatically exported.
+   \item Set environments\\
+	 \begin{verbatim}
+	cd pro
+	source setup.sh
+	 \end{verbatim}
+	 This setup.sh can be used from .bashrc.\\
+	 The setup.sh should be effective also in running the e14 library.
+   \item Make
+	 \begin{verbatim}
+	cd e14
+	make install-headers
+	 \end{verbatim}
+	 Please ignore some messages at this stage.
+	 \begin{verbatim}
+	make
+	 \end{verbatim}
+   \item Terminate ssh tunnel.
+	 \begin{verbatim}
+	./scripts/e14connection stop
+	 \end{verbatim}
+	 You can terminate your ssh tunnel connection.
+  \end{enumerate}
+ \section{Package (Example package, novice01)}
+   \begin{verbatim}
+        novice01
+        |-- Makefile        
+        |-- REQUIREMENTS    Necessary for the PACKAGE.
+        |-- novice01        For Header files.
+        |   `-- func.h
+        `-- src             For souce files.
+            `-- fun.cc	
+   \end{verbatim}
+   \begin{enumerate}
+    \item REQUIREMENTS is necessary for each package.\\
+	  In other words, if a directory contains REQUIREMENTS,
+	  the directory is a package.
+	  Inside REQUIREMENTS
+	  \begin{verbatim}
+	#config      ---> If an entry begin with #, it is indeed
+	                  a required library, but it is not a library.
+	MidasManager ---> This is required libraray and will be linked.
+	......
+	  \end{verbatim}
+    \item PACKAGES\\
+          If PACKAGES is exist, make is done recursively for the packages
+	  written in the PACKAGES.
+    \item \$E14\_TOP\_DIR/e14/EXPORTED\\
+	  If some packages in e14 is exported,
+	  they are listed in \$E14\_TOP\_DIR/e14/EXPORTED.
+          If e14 (top of all the packages) is exported,
+	  \$E14\_TOP\_DIR/e14/SUBDIRS is made and
+	  used instead.
+   \end{enumerate}
+ \section{Makefiles}
+   \begin{enumerate}
+    \item Target used in E14 libraray.
+	  \begin{verbatim}
+	install-headers:
+	install-libs:
+	install-bins:
+	pre::
+	distclean:
+	clean::
+	libs : 
+	bins :
+	  \end{verbatim}
+	  You can add ``pre::'' and ``clean::'' at anywhere in order to
+	  add some function. ``pre::'' is processed before ``install-headers''.
+    \item \$E14\_CONFIG\_DIR/Makefile.e14\\
+	  libs and bins are not defined, which should be written.
+	  Others are applied recursively to PACKAGES.
+	  \begin{verbatim}
+	PACKAGE      =     # or package name, as PACKAGE = $(shell basename `pwd`)
+	MAINS        =     # or exe name
+	INSTALL_LIBS =     # or no
+	INSTALL_BINS =     # or no
+	include $(E14_CONFIG_DIR)/Makefile.e14
+	libs:  ---> should define yourself
+	bins:  ---> should define yourself	
+	  \end{verbatim}
+    \item \$E14\_CONFIG\_DIR/Makefile.bin\\
+	  All targets are defined, which is standard
+	  for libraries without geant4.
+	  libs and bins are defined in addition to Makefile.e14.
+	  \begin{verbatim}
+	PACKAGE      =     # or package name, as PACKAGE = $(shell basename `pwd`)
+	MAINS        =     # or exe names ---> multiple name can be written.
+	                   # If MAINS=a b, then a.cc and b.cc with main()
+	                   #      should be in package dir.
+	INSTALL_LIBS =     # or no
+	INSTALL_BINS =     # or no
+	include $(E14_CONFIG_DIR)/Makefile.bin
+	  \end{verbatim}
+    \item \$E14\_CONFIG\_DIR/Makefile.g4\\
+	  All targets are defined,
+	  which support Geant4/CLHEP/ROOT.
+	  libs and bins are defined in addition to Makefile.e14.
+	  \begin{verbatim}
+	PACKAGE      =     # or package name, as PACKAGE = $(shell basename `pwd`)
+	MAINS        =     # or exe name ---> single name is allowed.
+	                   # If MAINS=a, then a.cc with main()
+	                   #     should be in package dir. 
+	INSTALL_LIBS =     # or no
+	INSTALL_BINS =     # or no
+	include $(E14_CONFIG_DIR)/Makefile.g4		
+	  \end{verbatim}
+   \end{enumerate}
+ \section{Web}
+   You can look through e14 library from
+   \begin{verbatim}
+	http://chiaki.kek.jp/work/e14lib/svn/	
+   \end{verbatim}
+   You can see the repository from
+   \begin{verbatim}
+	http://chiaki.kek.jp/~e14rs/WebSVN/
+   \end{verbatim}
+
+ \section{Contact}
+   Questions, comments, suggestions or requests are welcome.
+   Please contact Hajime NANJO (nanjo@scphys.kyoto-u.ac.jp) .
+   
+  \newpage 
+  \appendix
+  \section{Setups for subversion}
+  Many recent Linux distribution have subversion already.\\
+  At RSC, for bash user
+  \begin{verbatim}
+	SVN=/e14/local/subversion/1.1.4
+	export LD_LIBRARY_PATH=${SVN}/lib:${LD_LIBRARY_PATH}
+	export PATH=${SVN}/bin:${PATH}
+	export MANPATH=${SVN}/man:${MANPATH}
+  \end{verbatim}
+  At KEK CC, for bash user
+  \begin{verbatim}
+	SVN=/nfs/g/ps/klea/e14/local/subversion/1.1.4
+	export LD_LIBRARY_PATH=${SVN}/lib:${LD_LIBRARY_PATH}
+	export PATH=${SVN}/bin:${PATH}
+	export MANPATH=${SVN}/man:${MANPATH}
+  \end{verbatim}
+
+\end{document}

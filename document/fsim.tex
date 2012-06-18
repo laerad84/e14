@@ -1,0 +1,269 @@
+\documentclass[a4paper,12pt]{article}
+\input{package}
+
+\setlength{\topmargin}{-5pt}
+\setlength{\oddsidemargin}{0cm}
+\setlength{\evensidemargin}{0cm}
+\setlength{\textwidth}{16cm}
+\setlength{\textheight}{24cm}
+\setlength{\belowcaptionskip}{5pt}
+\setcounter{tocdepth}{6}
+
+\pagestyle{fancy}
+\fancyhf{}
+%\fancyhead[er]{\fancyplain{}{\sl\bf\leftmark}}
+%\fancyhead[ol]{\fancyplain{}{\sl\bf\rightmark}}
+\fancyhead[er]{{\sl\bf\leftmark}}
+\fancyhead[ol]{{\sl\bf\rightmark}}
+\fancyhead[el,or]{\rm\bf\thepage}
+\fancypagestyle{plain} {
+\fancyhead[er,ol]{}
+\fancyhead[el,or]{\rm\bf\thepage}}
+\renewcommand{\headrulewidth}{0.5pt}
+
+
+\newenvironment{widelineskip}{\addtolength{\baselineskip}{24pt}}{\relax}
+\begin{document}
+\title{E14 Fast Simulator Manual}
+\author{Hajime Nanjo}
+\maketitle
+ \section{Introduction}
+  \subsection{What is the fast simulation}
+  The detector responses to each particle are modeled with some 
+  functions instead of simulating the energy loss, shower development and
+  so on. The model functions are prepared using almost full
+  simulations. Inefficiency weights for each particles and fusion
+  weights for CsI clusters are calculated with such model functions. The
+  energy and timing resolutions are also assinged to the CsI clusters.
+  \subsection{Procedure}
+  Three steps are exits for the simulation and analysis.
+  \begin{itemize}
+   \item Step1:gsim4test (E14 detector with fastSimulationLevel==6)\\
+	 The charged veto systems and support strucutres are moved to far
+	 upstream and all the materials are set to be sensitive
+	 volumes. Then particles are stooped at the surfaces of the
+	 detector volumes and such information are stored.
+   \item Step2:e14fsim (\$E14\_TOP\_DIR/examples/e14fsim)\\
+	 Inefficiency weights are assigned for all particles.
+	 Fusion weights are assienged to gammas at CsI.
+	 Clustering are performed for all the combinations of hits at
+	 the CsI calorimeter. The energy and timing smearings are
+	 also applied to the clusters.
+   \item Step3:e14fsimg2ana (\$E14\_TOP\_DIR/examples/e14fsimg2ana)\\
+	 Two gamma anaysis is performed for the two cluster events. They 
+	 are treated as two gammas and the decay vertex is calculated
+	 assuming the $\pi^0$ mass. Variouts cuts are applied and some
+	 historgrams are filled.
+  \end{itemize}
+
+  \section{Step1 : gsim4test}
+  \begin{verbatim}
+	/GsimPhysicsListFactory/QGSP/buildAndRegister
+/GsimPrimaryGeneratorActionFactory/GsimGeneralParticleSource/buildAndRegister gps
+/gps/particle KLpi0nunu
+/gps/energy 1 GeV
+/gps/position 0 0 -1 m
+/gps/direction 0 0 1
+
+#/control/execute oglsini.mac
+#/GsimEventAction/setVisualizationMode 1
+
+/GsimDetector/world/setParameters 5*m 5*m 60*m
+/GsimDetector/world/setOuterVisibility 0
+/GsimDetectorFactory/GsimE14/buildAndRegister e14 /world
+
+/GsimDetectorFactory/GsimTube/buildAndRegister os0 /world/e14 0 0  29.5*m+1./2.*cm  0 0 0
+/GsimDetectorFactory/GsimTube/buildAndRegister os1 /world/e14 0 0 -29.5*m-1./2.*cm  0 0 0
+/GsimDetectorFactory/GsimTube/buildAndRegister os2 /world/e14 0 0 0                 0 0 0
+/GsimDetector/world/e14/os0/setParameters 0 2.41*m 1*cm 0 360*deg
+/GsimDetector/world/e14/os1/setParameters 0 2.41*m 1*cm 0 360*deg
+/GsimDetector/world/e14/os2/setParameters 2.4*m 2.41*m 59*m 0 360*deg
+/GsimDetector/world/e14/os0/setOuterMaterial G4_Galactic
+/GsimDetector/world/e14/os1/setOuterMaterial G4_Galactic
+/GsimDetector/world/e14/os2/setOuterMaterial G4_Galactic
+/GsimDetector/world/e14/os0/setSensitiveDetectorWithName os 0
+/GsimDetector/world/e14/os1/setSensitiveDetectorWithName os 1
+/GsimDetector/world/e14/os2/setSensitiveDetectorWithName os 2
+/GsimDetector/world/e14/os0/setOuterVisibility 0
+/GsimDetector/world/e14/os1/setOuterVisibility 0
+/GsimDetector/world/e14/os2/setOuterVisibility 0
+
+/GsimDetector/world/e14/setFastSimulationLevel 6
+
+/GsimSpectrumFactory/GsimE14Spectrum/buildAndRegister
+/GsimSpectrum/GsimE14Spectrum/addSpectrum Special
+
+/GsimDetector/world/e14/setThisAndDaughterHitsStore true
+
+/GsimDetectorManager/update
+
+  \end{verbatim}
+  The mbn, bcv, cv, and, bhcv are moved to far upstream when
+  fastSimulationLevel==6. Support structures (CsI cylinder and endcap)
+  are also moved to far upstream. All the other volumes are set
+  sensitive. All particles are stopped at the surfaces of the volumes
+  and such hit information (particle's PID and 4-vector) are stored.
+
+  The gsim4test can be run as follows.
+  \begin{verbatim}
+	$E14_TOP_DIR//examples/gsim4test/bin/gsim4test e14toy.mac kpinn.root 100000 1 1
+  \end{verbatim}
+  
+  \section{Step2 : e14fsim}
+  Some branches belows in TTree made in gsim4test are used.
+  \begin{itemize}
+   \item GenParticle.\\
+	 K, $\pi^0$ information.
+   \item CC01.--CC06., CBAR.,FBAR.,CSI.,BHPV.   \\
+	 Detector hit data. 
+  \end{itemize}
+
+  Hits in veto detectors are converted to E14FsimVeto. Inefficiency
+  functions are used for the weight calculations.  
+  Hits which are not $\gamma$ at CSI are also converted to E14FsimVeto.
+  Gamma hits at CsI are convertred to E14FsimMCGamma.
+  All clustering pattern including inefficiency and fusion effects are
+  generated according as the number of E14FsimMCGamma. Data are stored
+  cluster pattern by pattern. Inefficiency and fusion weights are
+  assigned to each cluter pattern. Such products are ClusterWeight,
+  where some of ClusterWeight through all the cluster pattern should be
+  the number of events generated. All patterns with triple or more
+  fusion are integrated as one pattern with one cluster and
+  ClusterEffi==-1.  E14FsimClusters are created from such cluster
+  pattern and energy and timing smearing are applied.
+    
+
+%   CC:cc01,cc02,cc03,cc04,cc05,cc06:DetectorEventData->Hit->pid,P,BARWeight
+%   BAR:cbar,fbar:DetectorEventData->Hit->pid,P,BARWeight
+%   CSI:csi
+%   .   gamma
+%   .     FsimMCGamma--->nGamma-->clusterPattern
+%   .                                inefiGamma-->ineffi.weight-->veto
+%   .                                cluster-->mcGamma
+%   .     save clusterPattern by pattern:
+%   .                nCluster==1 if tripple or more fusion
+%   .   other
+%   .     CSIWeight->veto
+%   BHPV:bhpv
+%   .     ineffi.
+%   ..........................................
+%   Discription for inefficiency functions
+%   Discription for stored variables.
+%   Energy and timing smearing
+%.............................................
+  \begin{itemize}
+   \item KDecayMome[3]/D
+   \item KDecayPos[3]/D
+   \item KDecayTime/D
+   \item Pi0number/I
+   \item Pi0Mome[Pi0number][3]/D
+   \item Pi0Pos[Pi0number][3]/D
+   \item Pi0Time[Pi0number]/D
+   \item eventID/I
+   \item nHitCluster/I
+   \item ClusterHitPos[nHitCluster][3]/D
+   \item ClusterHitTotE[nHitCluster]/D
+   \item ClusterHitAng[nHitCluster][2]/D
+   \item ClusterHitTime[nHitCluster]/D
+   \item ClusterHitParentID[nHitCluster]/I
+   \item ClusterHitTrueP[nHitCluster][3]/D
+   \item ClusterHitSigmaE[nHitCluster]/D
+   \item ClusterHitSigmaXY[nHitCluster]/D
+   \item ClusterEffi/D
+   \item CalHitClusterWeight/D
+   \item CalIneffiGammaWeight/D
+   \item ClusterFusionProb/D
+   \item ClusterWeight/D
+   \item EventWeight/D
+   \item mcEventID/I
+   \item nHitVeto/I
+   \item VetoPID[nHitVeto]/I
+   \item VetoDetID[nHitVeto]/I
+   \item VetoPos[nHitVeto][3]/D
+   \item VetoMome[nHitVeto][3]/D
+   \item VetoIneffi[nHitVeto]/D
+   \item DetVetoWeight[10]/D
+  \end{itemize}
+  \section{Step3 : e14fsimg2ana}
+  \begin{itemize}
+   \item EventID/I
+   \item OrigEventID/I
+   \item mcEventID/I
+   \item Pi0number/I
+   \item Pi0Mome[Pi0number][3]/D
+   \item Pi0Pos[Pi0number][3]/D
+   \item nHitCluster/I
+   \item ClusterHitTotE[nHitCluster]/D
+   \item ClusterHitPos[nHitCluster][3]/D
+   \item ClusterHitParentID[nHitCluster]/I
+   \item ClusterEffi/D
+   \item ClusterFusionProb/D
+   \item ClusterWeight/D
+   \item EventWeight/D
+   \item nHitVeto/I
+   \item VetoPID[nHitVeto]/I
+   \item VetoDetID[nHitVeto]/I
+   \item VetoPos[nHitVeto][3]/D
+   \item VetoMome[nHitVeto][3]/D
+   \item VetoIneffi[nHitVeto]/D
+   \item VetoWeight/D
+   \item CutCondition/I
+   \item RecEvenOdd/I
+   \item RecVertZ/D
+   \item RecPi0Pt/D
+   \item RecVertZsig2/D
+   \item RecPi0Mass/D
+   \item RecPi0E/D
+   \item RecPi0Px/D
+   \item RecPi0Py/D
+   \item RecPi0Pz/D
+   \item RecPi0Vx/D
+   \item RecPi0Vy/D
+   \item RecPi0Vz/D
+  \end{itemize}
+
+  The cut lists.
+  \begin{enumerate}
+   \item Energy Cut : iCut += 0x0001\\
+	 Egamma\_Min=0.1 GeV\\
+	 Egamma\_Max=2.0 GeV
+   \item Fiducial in CsI : iCut += 0x0002\\
+	 R\_Min=175 mm\\
+	 R\_Max=850 mm
+   \item Vertex Cut : iCut += 0x0004\\
+	 Zvert\_Min=3000 mm\\
+	 Zvert\_Max=5000 mm
+   \item PT Cut : iCut += 0x0008\\
+	 Pt\_Min=0.12 GeV\\
+	 Pt\_Max=0.25 GeV
+   \item Acp\_angle  : iCut += 0x0010\\
+	 Acop\_Min=30 deg
+   \item Two gamma distance : iCut += 0x0020\\
+	 gDist\_Min=300 mm
+   \item Total energy of two gamma : iCut += 0x0040\\
+	 TotE\_Min=0.5 GeV
+   \item In\_ang cut : Odd-pair cut : iCut +=0x0080\\
+	 Etheta\_Min=2.5 GeV
+   \item E\_ratio cut  : iCut +=0x0100\\
+	 Eratio\_Min=0.2
+   \item Pi0 Kinematic cut : iCut +=0x0200\\
+  \end{enumerate}
+
+  The detector ID lists.
+  \begin{table}[h]
+   \begin{tabular}{c|c}
+    Detector&VetoDetID \\
+    CC01&1 \\
+    CC02&2 \\
+    CC03&3 \\
+    CC04&4 \\
+    CC05&5 \\
+    CC06&6 \\
+    CBAR&7 \\
+    FBAR&8 \\
+    CSI&9 \\
+    BHPV&10 
+   \end{tabular}
+  \end{table}
+
+\end{document}
