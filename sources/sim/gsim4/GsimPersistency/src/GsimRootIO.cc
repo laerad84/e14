@@ -27,8 +27,6 @@
 #include "GsimData/GsimPhysicalVolumeData.h"
 #include "GsimData/GsimEventData.h"
 
-#include "G4RunManager.hh"
-
 #include "TFile.h"
 #include "TTree.h"
 #include "TH1.h"
@@ -99,13 +97,12 @@ void GsimRootIO::postBeginOfRunAction()
 #ifdef GSIMDEBUG
   GsimMessage::getInstance()->debugEnter(__PRETTY_FUNCTION__);
 #endif
-  
+
   fillDetectorDB();
   fillProcessDB();
   fillPhysicalVolumeDB();
   writeAndDestructRunTree();
   writeDictionary();
-  
   
 #ifdef GSIMDEBUG
   GsimMessage::getInstance()->debugExit(__PRETTY_FUNCTION__);
@@ -128,44 +125,8 @@ void GsimRootIO::beginOfEventAction() {
 #ifdef GSIMDEBUG
   GsimMessage::getInstance()->debugEnter(__PRETTY_FUNCTION__);
 #endif
+
   ;
-  
-  // added by E.Iwai
-  int eventID=G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();
-  if(eventID!=0) { return; }
-  
-  // General
-  //m_eventTree->SetBranchStatus("*.mtime.*",0);
-  m_eventTree->SetBranchStatus("*.*HitTime",0);
-  m_eventTree->SetBranchStatus("*.nTrig",0);
-  m_eventTree->SetBranchStatus("*.status",0);
-  m_eventTree->SetBranchStatus("*fUniqueID",0);
-  m_eventTree->SetBranchStatus("*fBits",0);
-  m_eventTree->SetBranchStatus("*thisID",0);
-  m_eventTree->SetBranchStatus("GenParticle.briefTracks.mass",0);
-  m_eventTree->SetBranchStatus("GenParticle.briefTracks.mech",0);
-  m_eventTree->SetBranchStatus("GenParticle.briefTracks.history",0);
-  //m_eventTree->SetBranchStatus("Event.*",0);
-  
-  // Fsim
-  //m_eventTree->SetBranchStatus("*.nDigi",0);
-  //m_eventTree->SetBranchStatus("*.digi.*",0);
-  //m_eventTree->SetBranchStatus("*.hits.stop",0);
-  //m_eventTree->SetBranchStatus("*.hits.hitChannel",0);
-  //m_eventTree->SetBranchStatus("GenParticle.briefTracks.end_*",0);
-  
-  // Full sim
-  m_eventTree->SetBranchStatus("*.nHit",0);
-  m_eventTree->SetBranchStatus("*.hits.*",0);
-  //m_eventTree->SetBranchStatus("*.digi.mtime*",0);
-  
-  /*
-  // special : decayProb
-  m_eventTree->SetBranchStatus("*",0);
-  m_eventTree->SetBranchStatus("GenParticle.briefTracks.end_v.fZ");
-  m_eventTree->SetBranchStatus("GenParticle.briefTracks.p.f?");
-  */
-  
   
 #ifdef GSIMDEBUG
   GsimMessage::getInstance()->debugExit(__PRETTY_FUNCTION__);
@@ -303,7 +264,6 @@ void GsimRootIO::writeAndDestructEventTree()
 #ifdef GSIMDEBUG
   GsimMessage::getInstance()->debugEnter(__PRETTY_FUNCTION__);
 #endif
-  
   m_tfile->cd();
   if(m_eventTree) {
     m_eventTree->Write();
